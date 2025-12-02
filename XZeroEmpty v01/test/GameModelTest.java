@@ -2,7 +2,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import xzero.model.GameModel;
-import xzero.model.Label;
+import xzero.model.labels.Label;
 import xzero.model.Player;
 import xzero.model.events.GameEvent;
 import xzero.model.events.GameListener;

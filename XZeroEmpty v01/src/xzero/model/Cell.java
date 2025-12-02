@@ -1,5 +1,7 @@
 package xzero.model;
 
+import xzero.model.labels.Label;
+
 import java.awt.Point;
 
 /**
@@ -25,12 +27,12 @@ public class Cell {
     }
 
     // --------------------- Метка, принадлежащая ячейке --------------------------
-    private Label _label = null;
+    private xzero.model.labels.Label _label = null;
 
     /**
      * Поместить метку в ячейку с ранними проверками и двусторонней связью.
      */
-    public void placeLabel(Label l) {
+    public void placeLabel(xzero.model.labels.Label l) {
         if (l == null) {
             throw new IllegalArgumentException("Нельзя поместить null-метку в ячейку");
         }
@@ -50,7 +52,7 @@ public class Cell {
      */
     public void removeLabel() {
         if (_label != null) {
-            Label old = _label;
+            xzero.model.labels.Label old = _label;
             _label = null;
             old.unsetCell();
         }

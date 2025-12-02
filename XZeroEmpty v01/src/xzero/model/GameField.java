@@ -4,6 +4,8 @@ import java.util.List;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import xzero.model.labels.Label;
 import xzero.model.navigation.Direction;
 import xzero.model.navigation.Shift;
 
@@ -42,14 +44,14 @@ public class GameField {
     }
 
     // ------------------------------ Метки ---------------------------------------
-    public Label label(Point pos) {
+    public xzero.model.labels.Label label(Point pos) {
         Cell obj = cell(pos);
         if(obj != null)     return obj.label();
 
         return null;
     }
 
-    public void setLabel(Point pos, Label label) {
+    public void setLabel(Point pos, xzero.model.labels.Label label) {
         if (label == null) {
             throw new IllegalArgumentException("Нельзя установить null-метку");
         }
@@ -66,13 +68,13 @@ public class GameField {
         obj.placeLabel(label);
     }
 
-    private ArrayList<Label> _labelPool = new ArrayList();
+    private ArrayList<xzero.model.labels.Label> _labelPool = new ArrayList();
 
-    public List<Label> labels() {
+    public List<xzero.model.labels.Label> labels() {
         _labelPool.clear();
 
         for(Cell obj : _cellPool) {
-            Label l = obj.label();
+            xzero.model.labels.Label l = obj.label();
             if(l != null) {
                 _labelPool.add(obj.label());
             }
@@ -81,8 +83,8 @@ public class GameField {
         return Collections.unmodifiableList(_labelPool);
     }
 
-    public List<Label> labelLine(Point start, Direction direct) {
-        ArrayList<Label> line = new ArrayList<>();
+    public List<xzero.model.labels.Label> labelLine(Point start, Direction direct) {
+        ArrayList<xzero.model.labels.Label> line = new ArrayList<>();
         boolean isLineFinished = false;
         Player startPlayer = null;
 

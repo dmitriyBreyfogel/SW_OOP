@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import xzero.model.GameModel;
-import xzero.model.Label;
+import xzero.model.labels.Label;
 import xzero.model.Player;
 import xzero.model.events.GameEvent;
 import xzero.model.events.GameListener;

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import xzero.model.events.PlayerActionEvent;
 import xzero.model.events.PlayerActionListener;
+import xzero.model.labels.Label;
 
 /**
  *  Игрок, который размещает предложенную ему метку
@@ -32,9 +33,9 @@ public class Player {
     }
 
     // ---------------------- Метка, которую нужно установить ---------------------
-    Label _label;
+    xzero.model.labels.Label _label;
 
-    public void setActiveLabel(Label l) {
+    public void setActiveLabel(xzero.model.labels.Label l) {
         if (l == null) {
             throw new IllegalArgumentException("Игроку выдана null-метка");
         }
@@ -44,16 +45,16 @@ public class Player {
         fireLabelIsReceived(_label);
     }
 
-    public Label takeActiveLabel() {
+    public xzero.model.labels.Label takeActiveLabel() {
         if (_label == null) {
             throw new IllegalStateException("Активной метки нет — передавать нечего");
         }
-        Label tmp = _label;
+        xzero.model.labels.Label tmp = _label;
         _label = null;
         return tmp;
     }
 
-    public Label activeLabel() {
+    public xzero.model.labels.Label activeLabel() {
         return _label;
     }
 
@@ -68,11 +69,11 @@ public class Player {
         _label = null;
     }
 
-    private ArrayList<Label> _labels = new ArrayList<>();
+    private ArrayList<xzero.model.labels.Label> _labels = new ArrayList<>();
 
-    public List<Label> labels(){
+    public List<xzero.model.labels.Label> labels(){
         _labels.clear();
-        for(Label obj: _field.labels())
+        for(xzero.model.labels.Label obj: _field.labels())
         {
             if(obj.player().equals(this))
             { _labels.add(obj); }
@@ -92,7 +93,7 @@ public class Player {
         _listenerList.remove(l);
     }
 
-    protected void fireLabelIsPlaced(Label l) {
+    protected void fireLabelIsPlaced(xzero.model.labels.Label l) {
         PlayerActionEvent e = new PlayerActionEvent(this);
         e.setPlayer(this);
         e.setLabel(l);

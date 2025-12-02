@@ -1,6 +1,6 @@
 package xzero.model.factory;
 
-import xzero.model.Label;
+import xzero.model.labels.Label;
 
 /**
  * Фабрика, порождающая метку. Реализует самую простую стратегию

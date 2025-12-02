@@ -1,7 +1,7 @@
 package xzero.model.events;
 
 import java.util.EventObject;
-import xzero.model.Label;
+import xzero.model.labels.Label;
 import xzero.model.Player;
 
 /**
