@@ -2,7 +2,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import xzero.model.Cell;
 import xzero.model.GameField;
-import xzero.model.labels.Label;
+import Label;
 import xzero.model.Player;
 
 import static org.junit.jupiter.api.Assertions.*;

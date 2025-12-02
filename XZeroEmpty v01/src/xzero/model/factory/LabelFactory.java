@@ -1,12 +1,40 @@
 package xzero.model.factory;
 
-import xzero.model.labels.Label;
+import xzero.model.Player;
+import xzero.model.labels.*;
 
 /**
- * Фабрика, порождающая метку. Реализует самую простую стратегию
+ * Фабрика, порождающая метки разных типов
  */
 public class LabelFactory {
-    public Label createLabel() {
-        return new Label();
+
+    /**
+     * Создаёт метку указанного типа для заданного владельца
+     *
+     * @param owner - логический владелец метки
+     * @param type - тип метки
+     * @return созданная метка
+     *
+     * @throws IllegalArgumentException
+     */
+    public Label createLabel(Player owner, LabelType type) {
+        if (owner == null) {
+            throw new IllegalArgumentException("LabelFactory: owner не может быть null");
+        }
+
+        if (type == null) {
+            throw new IllegalArgumentException("LabelFactory: type не может быть null");
+        }
+
+        switch (type) {
+            case NORMAL:
+                return new NormalLabel(owner);
+            case DELEGATED:
+                return new DelegatedLabel(owner);
+            case HIDDEN:
+                return new HiddenLabel(owner);
+            default:
+                throw new IllegalArgumentException("LabelFactory: неизвестный тип метки");
+        }
     }
 }

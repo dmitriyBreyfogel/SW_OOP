@@ -4,6 +4,7 @@ import xzero.model.Cell;
 import xzero.model.Player;
 
 public abstract class Label {
+
     // Ячейка, которой принадлежит метка
     private Cell _cell = null;
 

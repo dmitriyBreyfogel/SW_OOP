@@ -1,8 +1,8 @@
 package xzero.model.events;
 
 import java.util.EventObject;
-import xzero.model.labels.Label;
 import xzero.model.Player;
+import xzero.model.labels.Label;
 
 /**
  * Событие, связанное с любой деятельностью робота

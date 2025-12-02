@@ -9,7 +9,7 @@ import xzero.model.events.PlayerActionEvent;
 import xzero.model.events.PlayerActionListener;
 import xzero.model.factory.CellFactory;
 import xzero.model.factory.LabelFactory;
-import xzero.model.labels.Label;
+import Label;
 import xzero.model.navigation.Direction;
 
 /**
@@ -86,7 +86,7 @@ public class GameModel {
         _activePlayer++;
         if(_activePlayer >= _playerList.size())     _activePlayer = 0;
 
-        xzero.model.labels.Label newLabel = _labelFactory.createLabel();
+        Label newLabel = _labelFactory.createLabel();
         activePlayer().setActiveLabel(newLabel);
 
         firePlayerExchanged(activePlayer());
@@ -102,7 +102,7 @@ public class GameModel {
             throw new IllegalStateException("Лимит передач хода исчерпан");
         }
 
-        xzero.model.labels.Label l = activePlayer().takeActiveLabel();
+        Label l = activePlayer().takeActiveLabel();
 
         _passesLeft.set(_activePlayer, left - 1);
 

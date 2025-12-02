@@ -13,7 +13,7 @@ import xzero.model.labels.Label;
  */
 public class Player {
 
-    // --------------------------------- Имя игрока -------------------------------
+    // Имя игрока
     private String _name;
 
     public void setName(String name) {
@@ -24,43 +24,43 @@ public class Player {
         return _name;
     }
 
-    // ----------------------- Устанавливаем связь с полем -----------------------
-    GameField _field;
+    // Связь с полем
+    private GameField _field;
 
     public Player (GameField field, String name) {
         _field = field;
         _name = name;
     }
 
-    // ---------------------- Метка, которую нужно установить ---------------------
-    xzero.model.labels.Label _label;
+    // Метка, которую нужно установить
+    private Label _label;
 
-    public void setActiveLabel(xzero.model.labels.Label l) {
-        if (l == null) {
-            throw new IllegalArgumentException("Игроку выдана null-метка");
+    public void setActiveLabel(Label label) {
+        if (label == null) {
+            throw new IllegalArgumentException("Player: метка не может быть null");
         }
-        _label = l;
-        _label.setPlayer(this);
+        _label = label;
+        _label.setPlacedBy(this);
 
         fireLabelIsReceived(_label);
     }
 
-    public xzero.model.labels.Label takeActiveLabel() {
+    public Label takeActiveLabel() {
         if (_label == null) {
-            throw new IllegalStateException("Активной метки нет — передавать нечего");
+            throw new IllegalStateException("Player: метка не может быть null");
         }
-        xzero.model.labels.Label tmp = _label;
+        Label tmp = _label;
         _label = null;
         return tmp;
     }
 
-    public xzero.model.labels.Label activeLabel() {
+    public Label activeLabel() {
         return _label;
     }
 
     public void setLabelTo(Point pos){
         if (_label == null) {
-            throw new IllegalStateException("Активная метка не задана");
+            throw new IllegalStateException("Player: метка не может быть null");
         }
         _field.setLabel(pos, _label);
 
@@ -69,45 +69,46 @@ public class Player {
         _label = null;
     }
 
-    private ArrayList<xzero.model.labels.Label> _labels = new ArrayList<>();
+    private ArrayList<Label> _labels = new ArrayList<>();
 
-    public List<xzero.model.labels.Label> labels(){
+    public List<Label> labels(){
         _labels.clear();
-        for(xzero.model.labels.Label obj: _field.labels())
-        {
-            if(obj.player().equals(this))
-            { _labels.add(obj); }
+        for(Label obj: _field.labels()) {
+            if(obj.owner().equals(this)) {
+                _labels.add(obj);
+            }
         }
 
         return Collections.unmodifiableList(_labels);
     }
 
-    // ---------------------- Порождает события -----------------------------
     private final ArrayList<PlayerActionListener> _listenerList = new ArrayList<>();
 
-    public void addPlayerActionListener(PlayerActionListener l) {
-        if (l != null) _listenerList.add(l);
-    }
-
-    public void removePlayerActionListener(PlayerActionListener l) {
-        _listenerList.remove(l);
-    }
-
-    protected void fireLabelIsPlaced(xzero.model.labels.Label l) {
-        PlayerActionEvent e = new PlayerActionEvent(this);
-        e.setPlayer(this);
-        e.setLabel(l);
-        for (PlayerActionListener listener : _listenerList) {
-            listener.labelisPlaced(e);
+    public void addPlayerActionListener(PlayerActionListener listener) {
+        if (listener != null) {
+            _listenerList.add(listener);
         }
     }
 
-    protected void fireLabelIsReceived(Label l) {
-        PlayerActionEvent e = new PlayerActionEvent(this);
-        e.setPlayer(this);
-        e.setLabel(l);
+    public void removePlayerActionListener(PlayerActionListener listener) {
+        _listenerList.remove(listener);
+    }
+
+    protected void fireLabelIsPlaced(Label label) {
+        PlayerActionEvent event = new PlayerActionEvent(this);
+        event.setPlayer(this);
+        event.setLabel(label);
         for (PlayerActionListener listener : _listenerList) {
-            listener.labelIsReceived(e);
+            listener.labelisPlaced(event);
+        }
+    }
+
+    protected void fireLabelIsReceived(Label label) {
+        PlayerActionEvent event = new PlayerActionEvent(this);
+        event.setPlayer(this);
+        event.setLabel(label);
+        for (PlayerActionListener listener : _listenerList) {
+            listener.labelIsReceived(event);
         }
     }
 }

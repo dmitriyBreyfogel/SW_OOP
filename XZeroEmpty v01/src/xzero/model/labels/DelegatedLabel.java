@@ -3,6 +3,7 @@ package xzero.model.labels;
 import xzero.model.Player;
 
 public class DelegatedLabel extends Label {
+
     // Логический владелец метки
     private final Player _owner;
 
