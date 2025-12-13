@@ -10,6 +10,7 @@ import xzero.model.events.PlayerActionListener;
 import xzero.model.factory.CellFactory;
 import xzero.model.factory.LabelFactory;
 import xzero.model.labels.Label;
+import xzero.model.labels.LabelType;
 import xzero.model.navigation.Direction;
 
 /**
@@ -34,6 +35,9 @@ public class GameModel {
     private ArrayList<Player> _playerList = new ArrayList<>();
     private int _activePlayer;
 
+    private LabelType _activeLabelType = LabelType.NORMAL;
+    private final ArrayList<LabelType> _playerLabelTypes = new ArrayList<>();
+
     public Player activePlayer(){
         return _playerList.get(_activePlayer);
     }
@@ -48,12 +52,14 @@ public class GameModel {
         p.addPlayerActionListener(observer);
         _playerList.add(p);
         _passesLeft.add(PASS_LIMIT_PER_PLAYER);
+        _playerLabelTypes.add(LabelType.NORMAL);
         _activePlayer = 0;
 
         p = new Player(field(), "O");
         p.addPlayerActionListener(observer);
         _playerList.add(p);
         _passesLeft.add(PASS_LIMIT_PER_PLAYER);
+        _playerLabelTypes.add(LabelType.NORMAL);
     }
 
     // ---------------------- Порождение обстановки на поле ---------------------
@@ -75,6 +81,7 @@ public class GameModel {
         generateField();
 
         resetPassCounters();
+        resetLabelTypes();
 
         _activePlayer = _playerList.size()-1;
         exchangePlayer();
@@ -86,8 +93,8 @@ public class GameModel {
         _activePlayer++;
         if(_activePlayer >= _playerList.size())     _activePlayer = 0;
 
-        Label newLabel = _labelFactory.createLabel();
-        activePlayer().setActiveLabel(newLabel);
+        _activeLabelType = _playerLabelTypes.get(_activePlayer);
+        refreshActiveLabel();
 
         firePlayerExchanged(activePlayer());
     }
@@ -102,16 +109,45 @@ public class GameModel {
             throw new IllegalStateException("Лимит передач хода исчерпан");
         }
 
-        Label l = activePlayer().takeActiveLabel();
+        activePlayer().takeActiveLabel();
 
         _passesLeft.set(_activePlayer, left - 1);
 
         _activePlayer++;
         if (_activePlayer >= _playerList.size()) _activePlayer = 0;
 
-        activePlayer().setActiveLabel(l);
+        _activeLabelType = _playerLabelTypes.get(_activePlayer);
+        refreshActiveLabel();
 
         firePlayerExchanged(activePlayer());
+    }
+
+    public void setActiveLabelType(LabelType labelType) {
+        if (labelType == null) {
+            throw new IllegalArgumentException("Нельзя выбрать пустой тип метки");
+        }
+        _activeLabelType = labelType;
+        _playerLabelTypes.set(_activePlayer, labelType);
+        refreshActiveLabel();
+    }
+
+    public LabelType activeLabelType() {
+        return _activeLabelType;
+    }
+
+    private void refreshActiveLabel() {
+        Player opponent = opponentFor(activePlayer());
+        Label newLabel = _labelFactory.createLabel(activePlayer(), opponent, _activeLabelType);
+        activePlayer().setActiveLabel(newLabel);
+    }
+
+    private Player opponentFor(Player player) {
+        for (Player p : _playerList) {
+            if (!p.equals(player)) {
+                return p;
+            }
+        }
+        return player;
     }
 
     private static int WINNER_LINE_LENGTH = 5;
@@ -139,6 +175,12 @@ public class GameModel {
     private void resetPassCounters() {
         for (int i = 0; i < _passesLeft.size(); i++) {
             _passesLeft.set(i, PASS_LIMIT_PER_PLAYER);
+        }
+    }
+
+    private void resetLabelTypes() {
+        for (int i = 0; i < _playerLabelTypes.size(); i++) {
+            _playerLabelTypes.set(i, LabelType.NORMAL);
         }
     }
 
