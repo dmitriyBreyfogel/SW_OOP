@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -24,15 +25,20 @@ import xzero.model.events.GameListener;
 import xzero.model.events.PlayerActionEvent;
 import xzero.model.events.PlayerActionListener;
 import xzero.model.labels.Label;
+import xzero.model.labels.LabelType;
+import xzero.model.labels.DelegatedLabel;
+import xzero.model.labels.HiddenLabel;
 
 public class GamePanel extends JFrame {
     
     private JPanel fieldPanel = new JPanel();
-    
+
     private JPanel infoPanel = new JPanel();
     private JButton labelInfo = new JButton();
     private JLabel playerInfo = new JLabel();
     private JButton passButton = new JButton("Пас");
+    private JComboBox<LabelType> labelTypeSelector = new JComboBox<>(LabelType.values());
+    private boolean isLabelSelectorAdjusting = false;
 
     private JMenuBar menu = null;
     private final String fileItems[] = new String []{"New", "Exit"};
@@ -92,12 +98,19 @@ public class GamePanel extends JFrame {
 
         box.add(new JLabel("Метка :"));
         box.add(Box.createHorizontalStrut(10));
-        
+
         labelInfo.setEnabled(false);
         labelInfo.setPreferredSize(new Dimension(CELL_SIZE, CELL_SIZE));
         labelInfo.setMinimumSize(new Dimension(CELL_SIZE, CELL_SIZE));
         labelInfo.setMaximumSize(new Dimension(CELL_SIZE, CELL_SIZE));
         box.add(labelInfo);
+
+        box.add(Box.createHorizontalStrut(10));
+        box.add(new JLabel("Тип метки:"));
+        box.add(Box.createHorizontalStrut(10));
+        labelTypeSelector.setFocusable(false);
+        labelTypeSelector.addActionListener(e -> onLabelTypeChanged());
+        box.add(labelTypeSelector);
 
         box.add(Box.createHorizontalStrut(10));
 
@@ -189,15 +202,16 @@ public class GamePanel extends JFrame {
     }
 
     private void drawLabelOnField(Label l){
-        
+
         JButton btn = getButton(l.cell().position());
-        btn.setText(l.owner().name());
+        btn.setText(l.symbol());
     }
-    
-    private void drawLabelOnInfoPanel(Label l){ 
-        
-        labelInfo.setText(l.owner().name());
-    }   
+
+    private void drawLabelOnInfoPanel(Label l){
+
+        labelInfo.setText(l.symbol());
+        updateLabelSelector(l);
+    }
 
     private void drawPlayerOnInfoPanel(Player p){ 
         
@@ -210,6 +224,35 @@ public class GamePanel extends JFrame {
         for(Component c : comp)
         {    c.setEnabled(on);   }
         passButton.setEnabled(on);
+        labelTypeSelector.setEnabled(on);
+    }
+
+    private void onLabelTypeChanged() {
+        if (isLabelSelectorAdjusting) {
+            return;
+        }
+        LabelType selectedType = (LabelType) labelTypeSelector.getSelectedItem();
+        try {
+            _model.setActiveLabelType(selectedType);
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Выбор метки", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void updateLabelSelector(Label label) {
+        isLabelSelectorAdjusting = true;
+        labelTypeSelector.setSelectedItem(resolveLabelType(label));
+        isLabelSelectorAdjusting = false;
+    }
+
+    private LabelType resolveLabelType(Label label) {
+        if (label instanceof HiddenLabel) {
+            return LabelType.HIDDEN;
+        }
+        if (label instanceof DelegatedLabel) {
+            return LabelType.DELEGATED;
+        }
+        return LabelType.NORMAL;
     }
     
 // ----------------------------- Создаем меню ----------------------------------  
@@ -264,8 +307,9 @@ public class GamePanel extends JFrame {
 
         @Override
         public void labelisPlaced(PlayerActionEvent e) {
-            
+
             drawLabelOnField(e.label());
+            setEnabledField(false);
         }
 
         @Override
