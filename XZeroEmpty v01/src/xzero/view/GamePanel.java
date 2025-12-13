@@ -219,10 +219,24 @@ public class GamePanel extends JFrame {
     }
     
     private void setEnabledField(boolean on){
+        Component[] components = fieldPanel.getComponents();
 
-        Component comp[] = fieldPanel.getComponents();
-        for(Component c : comp)
-        {    c.setEnabled(on);   }
+        for (Component component : components) {
+            if (!(component instanceof JButton)) {
+                continue;
+            }
+
+            JButton button = (JButton) component;
+            if (!on) {
+                button.setEnabled(false);
+                continue;
+            }
+
+            Point position = buttonPosition(button);
+            boolean isCellEmpty = _model.field().label(position) == null;
+            button.setEnabled(isCellEmpty);
+        }
+
         passButton.setEnabled(on);
         labelTypeSelector.setEnabled(on);
     }
