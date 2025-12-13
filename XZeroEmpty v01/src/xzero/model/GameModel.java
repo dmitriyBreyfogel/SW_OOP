@@ -46,7 +46,7 @@ public class GameModel {
         field().setSize(5, 5);
 
         Player p;
-        PlayerObserver observer = new PlayerObserver();
+        PlayerObserver observer = new PlayerObserver(this);
 
         p = new Player(field(), "X");
         p.addPlayerActionListener(observer);
@@ -196,28 +196,24 @@ public class GameModel {
     }
 
     // ------------------------- Реагируем на действия игрока ------------------
-    private class PlayerObserver implements PlayerActionListener{
-        @Override
-        public void labelisPlaced(PlayerActionEvent e) {
-            if(e.player() == activePlayer()) {
-                fireLabelIsPlaced(e);
-            }
-
-            Player winner = determineWinner();
-
-            if(winner == null) {
-                exchangePlayer();
-            }
-            else {
-                fireGameFinished(winner);
-            }
+    void handleLabelPlaced(PlayerActionEvent e) {
+        if(e.player() == activePlayer()) {
+            fireLabelIsPlaced(e);
         }
 
-        @Override
-        public void labelIsReceived(PlayerActionEvent e) {
-            if(e.player() == activePlayer()) {
-                fireLabelIsRecived(e);
-            }
+        Player winner = determineWinner();
+
+        if(winner == null) {
+            exchangePlayer();
+        }
+        else {
+            fireGameFinished(winner);
+        }
+    }
+
+    void handleLabelReceived(PlayerActionEvent e) {
+        if(e.player() == activePlayer()) {
+            fireLabelIsRecived(e);
         }
     }
 

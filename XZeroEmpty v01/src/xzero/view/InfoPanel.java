@@ -18,7 +18,6 @@ import xzero.model.labels.Label;
 import xzero.model.labels.LabelType;
 import xzero.view.render.LabelTypeRenderer;
 
-
 /**
  * Информационная панель: показывает текущего игрока, активную метку и позволяет
  * выбрать тип метки или выполнить пас.
@@ -30,7 +29,6 @@ public class InfoPanel extends JPanel {
     private final JButton labelInfo = new JButton();
     private final JLabel playerInfo = new JLabel();
     private final JLabel passInfo = new JLabel();
-
     private final JButton passButton = new JButton("Пас");
     private final JComboBox<LabelType> labelTypeSelector = new JComboBox<>(LabelType.values());
 
@@ -101,7 +99,6 @@ public class InfoPanel extends JPanel {
         add(Box.createHorizontalStrut(10));
         labelTypeSelector.setFocusable(false);
         labelTypeSelector.setRenderer(new LabelTypeRenderer());
-
         labelTypeSelector.addActionListener(e -> onLabelTypeSelectorChanged());
         add(labelTypeSelector);
 

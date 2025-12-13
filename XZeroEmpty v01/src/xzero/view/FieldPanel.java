@@ -41,7 +41,7 @@ public class FieldPanel extends JPanel {
         Dimension fieldDimension = new Dimension(
                 CELL_SIZE * model.field().width(),
                 CELL_SIZE * model.field().height());
-      
+
         setPreferredSize(fieldDimension);
         setMinimumSize(fieldDimension);
         setMaximumSize(fieldDimension);
