@@ -1,6 +1,8 @@
 package xzero.model;
 
 
+import xzero.model.labels.Label;
+
 import java.awt.Point;
 
 /**

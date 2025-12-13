@@ -5,7 +5,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import Label;
+import xzero.model.labels.Label;
 import xzero.model.navigation.Direction;
 import xzero.model.navigation.Shift;
 
@@ -94,14 +94,14 @@ public class GameField {
         isLineFinished = (l == null);
         if(!isLineFinished) {
             line.add(l);
-            startPlayer = line.get(0).player();
+            startPlayer = line.get(0).owner();
         }
 
         Shift shift = direct.shift();
         pos.translate(shift.byHorizontal(), shift.byVertical());
         while(!isLineFinished && containsRange(pos)) {
             l = label(pos);
-            isLineFinished = (l == null || !l.player().equals(startPlayer));
+            isLineFinished = (l == null || !l.owner().equals(startPlayer));
 
             if(!isLineFinished) {
                 line.add(l);

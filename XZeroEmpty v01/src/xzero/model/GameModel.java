@@ -9,7 +9,7 @@ import xzero.model.events.PlayerActionEvent;
 import xzero.model.events.PlayerActionListener;
 import xzero.model.factory.CellFactory;
 import xzero.model.factory.LabelFactory;
-import Label;
+import xzero.model.labels.Label;
 import xzero.model.navigation.Direction;
 
 /**
@@ -127,7 +127,7 @@ public class GameModel {
                     List<Label> line = field().labelLine(pos, direct);
 
                     if(line.size() >= WINNER_LINE_LENGTH) {
-                        return line.get(0).player();
+                        return line.get(0).owner();
                     }
                 }
             }

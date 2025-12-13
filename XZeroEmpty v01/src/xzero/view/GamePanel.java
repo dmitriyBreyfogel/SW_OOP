@@ -18,12 +18,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import xzero.model.GameModel;
-import Label;
 import xzero.model.Player;
 import xzero.model.events.GameEvent;
 import xzero.model.events.GameListener;
 import xzero.model.events.PlayerActionEvent;
 import xzero.model.events.PlayerActionListener;
+import xzero.model.labels.Label;
 
 public class GamePanel extends JFrame {
     
@@ -188,15 +188,15 @@ public class GamePanel extends JFrame {
         return null;
     }
 
-    private void drawLabelOnField(Label l){ 
+    private void drawLabelOnField(Label l){
         
         JButton btn = getButton(l.cell().position());
-        btn.setText(l.player().name());
+        btn.setText(l.owner().name());
     }
     
     private void drawLabelOnInfoPanel(Label l){ 
         
-        labelInfo.setText(l.player().name());
+        labelInfo.setText(l.owner().name());
     }   
 
     private void drawPlayerOnInfoPanel(Player p){ 
