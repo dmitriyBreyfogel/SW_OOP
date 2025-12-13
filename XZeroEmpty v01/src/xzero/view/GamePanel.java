@@ -80,6 +80,7 @@ public class GamePanel extends JFrame {
         @Override
         public void labelIsReceived(PlayerActionEvent event) {
             drawLabelOnInfoPanel(event.label());
+            drawPassesOnInfoPanel(event.player());
             setInteractionEnabled(true);
         }
     }
@@ -98,6 +99,7 @@ public class GamePanel extends JFrame {
         @Override
         public void playerExchanged(GameEvent event) {
             drawPlayerOnInfoPanel(event.player());
+            drawPassesOnInfoPanel(event.player());
         }
     }
 
@@ -111,5 +113,10 @@ public class GamePanel extends JFrame {
 
     private void drawLabelOnField(Label label) {
         fieldPanel.drawLabel(label);
+    }
+
+    private void drawPassesOnInfoPanel(Player player) {
+        int passesLeft = model.passesLeftFor(player);
+        infoPanel.showPasses(passesLeft);
     }
 }

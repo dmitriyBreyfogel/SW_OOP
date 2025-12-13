@@ -178,6 +178,17 @@ public class GameModel {
         }
     }
 
+    /**
+     * Возвращает количество доступных пасов для указанного игрока.
+     */
+    public int passesLeftFor(Player player) {
+        int index = _playerList.indexOf(player);
+        if (index < 0) {
+            return 0;
+        }
+        return _passesLeft.get(index);
+    }
+
     private void resetLabelTypes() {
         for (int i = 0; i < _playerLabelTypes.size(); i++) {
             _playerLabelTypes.set(i, LabelType.NORMAL);

@@ -9,12 +9,15 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import xzero.model.Player;
 import xzero.model.labels.DelegatedLabel;
 import xzero.model.labels.HiddenLabel;
 import xzero.model.labels.Label;
 import xzero.model.labels.LabelType;
+import xzero.view.render.LabelTypeRenderer;
+
 
 /**
  * Информационная панель: показывает текущего игрока, активную метку и позволяет
@@ -26,6 +29,8 @@ public class InfoPanel extends JPanel {
 
     private final JButton labelInfo = new JButton();
     private final JLabel playerInfo = new JLabel();
+    private final JLabel passInfo = new JLabel();
+
     private final JButton passButton = new JButton("Пас");
     private final JComboBox<LabelType> labelTypeSelector = new JComboBox<>(LabelType.values());
 
@@ -47,6 +52,13 @@ public class InfoPanel extends JPanel {
      */
     public void showPlayer(Player player) {
         playerInfo.setText(player.name());
+    }
+
+    /**
+     * Отображает количество оставшихся пасов у активного игрока.
+     */
+    public void showPasses(int passesLeft) {
+        passInfo.setText(String.format("Пасы: %d", passesLeft));
     }
 
     /**
@@ -88,10 +100,17 @@ public class InfoPanel extends JPanel {
         add(new JLabel("Тип метки:"));
         add(Box.createHorizontalStrut(10));
         labelTypeSelector.setFocusable(false);
+        labelTypeSelector.setRenderer(new LabelTypeRenderer());
+
         labelTypeSelector.addActionListener(e -> onLabelTypeSelectorChanged());
         add(labelTypeSelector);
 
         add(Box.createHorizontalStrut(10));
+
+        passInfo.setHorizontalAlignment(SwingConstants.CENTER);
+        passInfo.setText("Пасы: 0");
+        passInfo.setPreferredSize(new Dimension(100, CELL_SIZE));
+        add(passInfo);
 
         passButton.setFocusable(false);
         passButton.addActionListener(e -> onPassButtonClicked());
