@@ -38,6 +38,7 @@ public class GameModel {
     private int _activePlayer;
 
     private LabelType _activeLabelType = LabelType.NORMAL;
+    private final ArrayList<LabelType> _playerLabelTypes = new ArrayList<>();
 
     public Player activePlayer(){
         return _playerList.get(_activePlayer);
@@ -53,12 +54,14 @@ public class GameModel {
         p.addPlayerActionListener(observer);
         _playerList.add(p);
         _passesLeft.add(PASS_LIMIT_PER_PLAYER);
+        _playerLabelTypes.add(LabelType.NORMAL);
         _activePlayer = 0;
 
         p = new Player(field(), "O");
         p.addPlayerActionListener(observer);
         _playerList.add(p);
         _passesLeft.add(PASS_LIMIT_PER_PLAYER);
+        _playerLabelTypes.add(LabelType.NORMAL);
     }
 
     // ---------------------- Порождение обстановки на поле ---------------------
@@ -80,6 +83,7 @@ public class GameModel {
         generateField();
 
         resetPassCounters();
+        resetLabelTypes();
 
         _activePlayer = _playerList.size()-1;
         exchangePlayer();
@@ -91,7 +95,7 @@ public class GameModel {
         _activePlayer++;
         if(_activePlayer >= _playerList.size())     _activePlayer = 0;
 
-        _activeLabelType = LabelType.NORMAL;
+        _activeLabelType = _playerLabelTypes.get(_activePlayer);
         refreshActiveLabel();
 
         firePlayerExchanged(activePlayer());
@@ -107,15 +111,15 @@ public class GameModel {
             throw new IllegalStateException("Лимит передач хода исчерпан");
         }
 
-        Label l = activePlayer().takeActiveLabel();
+        activePlayer().takeActiveLabel();
 
         _passesLeft.set(_activePlayer, left - 1);
 
         _activePlayer++;
         if (_activePlayer >= _playerList.size()) _activePlayer = 0;
 
-        _activeLabelType = detectLabelType(l);
-        activePlayer().setActiveLabel(l);
+        _activeLabelType = _playerLabelTypes.get(_activePlayer);
+        refreshActiveLabel();
 
         firePlayerExchanged(activePlayer());
     }
@@ -125,6 +129,7 @@ public class GameModel {
             throw new IllegalArgumentException("Нельзя выбрать пустой тип метки");
         }
         _activeLabelType = labelType;
+        _playerLabelTypes.set(_activePlayer, labelType);
         refreshActiveLabel();
     }
 
@@ -182,6 +187,12 @@ public class GameModel {
     private void resetPassCounters() {
         for (int i = 0; i < _passesLeft.size(); i++) {
             _passesLeft.set(i, PASS_LIMIT_PER_PLAYER);
+        }
+    }
+
+    private void resetLabelTypes() {
+        for (int i = 0; i < _playerLabelTypes.size(); i++) {
+            _playerLabelTypes.set(i, LabelType.NORMAL);
         }
     }
 
