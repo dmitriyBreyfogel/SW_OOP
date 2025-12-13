@@ -307,8 +307,9 @@ public class GamePanel extends JFrame {
 
         @Override
         public void labelisPlaced(PlayerActionEvent e) {
-            
+
             drawLabelOnField(e.label());
+            setEnabledField(false);
         }
 
         @Override
