@@ -41,6 +41,7 @@ public class FieldPanel extends JPanel {
         Dimension fieldDimension = new Dimension(
                 CELL_SIZE * model.field().width(),
                 CELL_SIZE * model.field().height());
+
         setPreferredSize(fieldDimension);
         setMinimumSize(fieldDimension);
         setMaximumSize(fieldDimension);
@@ -74,6 +75,7 @@ public class FieldPanel extends JPanel {
     public void setInteractionEnabled(boolean enabled) {
         for (Map.Entry<Point, CellButton> entry : buttons.entrySet()) {
             CellButton button = entry.getValue();
+
             if (!enabled) {
                 button.setEnabled(false);
                 continue;
