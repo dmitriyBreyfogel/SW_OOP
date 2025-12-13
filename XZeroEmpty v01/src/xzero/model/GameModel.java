@@ -11,8 +11,6 @@ import xzero.model.factory.CellFactory;
 import xzero.model.factory.LabelFactory;
 import xzero.model.labels.Label;
 import xzero.model.labels.LabelType;
-import xzero.model.labels.DelegatedLabel;
-import xzero.model.labels.HiddenLabel;
 import xzero.model.navigation.Direction;
 
 /**
@@ -150,16 +148,6 @@ public class GameModel {
             }
         }
         return player;
-    }
-
-    private LabelType detectLabelType(Label label) {
-        if (label instanceof HiddenLabel) {
-            return LabelType.HIDDEN;
-        }
-        if (label instanceof DelegatedLabel) {
-            return LabelType.DELEGATED;
-        }
-        return LabelType.NORMAL;
     }
 
     private static int WINNER_LINE_LENGTH = 5;
