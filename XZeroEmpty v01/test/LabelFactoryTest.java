@@ -74,4 +74,30 @@ class LabelFactoryTest {
         LabelFactory factory = new LabelFactory();
         assertThrows(IllegalArgumentException.class, () -> factory.createLabel(null, LabelType.NORMAL));
     }
+
+    @Test
+    @DisplayName("Тест №7: нормальная метка через перегруженный метод принадлежит активному игроку")
+    void overloadedMethodUsesCurrentForNormalType() {
+        LabelFactory factory = new LabelFactory();
+        Player current = player("X");
+        Player opponent = player("O");
+
+        Label label = factory.createLabel(current, opponent, LabelType.NORMAL);
+
+        assertEquals(current, label.owner());
+        assertEquals("X", label.symbol());
+    }
+
+    @Test
+    @DisplayName("Тест №8: скрытая метка игнорирует противника и остаётся за текущим игроком")
+    void hiddenLabelKeepsCurrentOwnerEvenWithOpponent() {
+        LabelFactory factory = new LabelFactory();
+        Player current = player("X");
+        Player opponent = player("O");
+
+        Label label = factory.createLabel(current, opponent, LabelType.HIDDEN);
+
+        assertEquals(current, label.owner());
+        assertEquals("?", label.symbol());
+    }
 }

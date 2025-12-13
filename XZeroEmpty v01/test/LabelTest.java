@@ -66,4 +66,27 @@ class LabelTest {
         label.unsetPlacedBy();
         assertNull(label.getPlacedBy());
     }
+
+    @Test
+    @DisplayName("Тест №6: конструкторы меток отклоняют null-владельца")
+    void constructorsRejectNullOwner() {
+        assertThrows(IllegalArgumentException.class, () -> new NormalLabel(null));
+        assertThrows(IllegalArgumentException.class, () -> new DelegatedLabel(null));
+        assertThrows(IllegalArgumentException.class, () -> new HiddenLabel(null));
+    }
+
+    @Test
+    @DisplayName("Тест №7: повторное задание placedBy замещает старое значение и корректно очищается")
+    void placedByCanBeReassignedAndCleared() {
+        Player first = new Player(new GameField(), "X");
+        Player second = new Player(new GameField(), "O");
+        Label label = new NormalLabel(first);
+
+        label.setPlacedBy(first);
+        label.setPlacedBy(second);
+        assertEquals(second, label.getPlacedBy());
+
+        label.unsetPlacedBy();
+        assertNull(label.getPlacedBy());
+    }
 }

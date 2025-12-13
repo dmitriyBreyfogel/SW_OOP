@@ -154,4 +154,26 @@ class GameFieldTest {
         GameField f = makeField(2, 2);
         assertThrows(IllegalArgumentException.class, () -> f.setLabel(new Point(1, 1), null));
     }
+
+    @Test
+    @DisplayName("Тест №13: диагональная линия строится корректно")
+    void labelLineDiagonal() {
+        GameField f = makeField(3, 3);
+        Player p = new Player(f, "X");
+        f.setLabel(new Point(1, 1), labelFor(f, p));
+        f.setLabel(new Point(2, 2), labelFor(f, p));
+        f.setLabel(new Point(3, 3), labelFor(f, p));
+
+        List<Label> line = f.labelLine(new Point(1, 1), Direction.southEast());
+        assertEquals(3, line.size());
+        assertTrue(line.stream().allMatch(l -> l.owner().equals(p)));
+    }
+
+    @Test
+    @DisplayName("Тест №14: пустая стартовая ячейка возвращает пустую линию")
+    void labelLineFromEmptyCellIsEmpty() {
+        GameField f = makeField(2, 2);
+        List<Label> line = f.labelLine(new Point(1, 1), Direction.east());
+        assertTrue(line.isEmpty());
+    }
 }

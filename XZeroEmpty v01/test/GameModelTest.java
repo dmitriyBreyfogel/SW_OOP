@@ -188,4 +188,44 @@ class GameModelTest {
     void passesLeftForUnknownPlayerIsZero() {
         assertEquals(0, model.passesLeftFor(new Player(model.field(), "Z")));
     }
+
+    @Test
+    @DisplayName("Тест №16: старт сбрасывает выбранные типы меток обоих игроков")
+    void startResetsLabelTypes() {
+        model.setActiveLabelType(LabelType.HIDDEN);
+        model.activePlayer().setLabelTo(new Point(1, 1));
+        model.setActiveLabelType(LabelType.DELEGATED);
+
+        model.start();
+
+        assertEquals(LabelType.NORMAL, model.activeLabelType());
+        assertEquals(model.activePlayer(), model.activePlayer().activeLabel().owner());
+        model.activePlayer().setLabelTo(new Point(1, 2));
+        assertEquals(LabelType.NORMAL, model.activeLabelType());
+    }
+
+    @Test
+    @DisplayName("Тест №17: лимит пасов расходуется только у передающего игрока")
+    void passConsumesOnlyCurrentPlayerLimit() {
+        Player first = model.activePlayer();
+        model.passTurn();
+
+        Player second = model.activePlayer();
+        assertEquals(1, model.passesLeftFor(second));
+
+        second.setLabelTo(new Point(1, 1));
+        assertEquals(0, model.passesLeftFor(first));
+        assertEquals(1, model.passesLeftFor(second));
+    }
+
+    @Test
+    @DisplayName("Тест №18: смена типа метки выдаёт новую активную метку")
+    void changingLabelTypeReissuesActiveLabel() {
+        Label currentLabel = model.activePlayer().activeLabel();
+        model.setActiveLabelType(LabelType.HIDDEN);
+        Label refreshed = model.activePlayer().activeLabel();
+
+        assertNotSame(currentLabel, refreshed);
+        assertEquals("?", refreshed.symbol());
+    }
 }
