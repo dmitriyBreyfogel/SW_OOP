@@ -37,4 +37,23 @@ public class LabelFactory {
                 throw new IllegalArgumentException("LabelFactory: неизвестный тип метки");
         }
     }
+
+    /**
+     * Создаёт метку для текущего игрока, учитывая выбранный тип метки и его противника
+     *
+     * @param currentPlayer активный игрок, совершающий ход
+     * @param opponent его противник (нужен для делегированной метки)
+     * @param type желаемый тип метки
+     * @return созданная метка с корректным владельцем
+     */
+    public Label createLabel(Player currentPlayer, Player opponent, LabelType type) {
+        if (type == LabelType.DELEGATED) {
+            if (opponent == null) {
+                throw new IllegalArgumentException("LabelFactory: opponent не может быть null для делегированной метки");
+            }
+            return createLabel(opponent, type);
+        }
+
+        return createLabel(currentPlayer, type);
+    }
 }

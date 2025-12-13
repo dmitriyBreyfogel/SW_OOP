@@ -10,6 +10,9 @@ import xzero.model.events.PlayerActionListener;
 import xzero.model.factory.CellFactory;
 import xzero.model.factory.LabelFactory;
 import xzero.model.labels.Label;
+import xzero.model.labels.LabelType;
+import xzero.model.labels.DelegatedLabel;
+import xzero.model.labels.HiddenLabel;
 import xzero.model.navigation.Direction;
 
 /**
@@ -33,6 +36,8 @@ public class GameModel {
 
     private ArrayList<Player> _playerList = new ArrayList<>();
     private int _activePlayer;
+
+    private LabelType _activeLabelType = LabelType.NORMAL;
 
     public Player activePlayer(){
         return _playerList.get(_activePlayer);
@@ -86,8 +91,8 @@ public class GameModel {
         _activePlayer++;
         if(_activePlayer >= _playerList.size())     _activePlayer = 0;
 
-        Label newLabel = _labelFactory.createLabel();
-        activePlayer().setActiveLabel(newLabel);
+        _activeLabelType = LabelType.NORMAL;
+        refreshActiveLabel();
 
         firePlayerExchanged(activePlayer());
     }
@@ -109,9 +114,47 @@ public class GameModel {
         _activePlayer++;
         if (_activePlayer >= _playerList.size()) _activePlayer = 0;
 
+        _activeLabelType = detectLabelType(l);
         activePlayer().setActiveLabel(l);
 
         firePlayerExchanged(activePlayer());
+    }
+
+    public void setActiveLabelType(LabelType labelType) {
+        if (labelType == null) {
+            throw new IllegalArgumentException("Нельзя выбрать пустой тип метки");
+        }
+        _activeLabelType = labelType;
+        refreshActiveLabel();
+    }
+
+    public LabelType activeLabelType() {
+        return _activeLabelType;
+    }
+
+    private void refreshActiveLabel() {
+        Player opponent = opponentFor(activePlayer());
+        Label newLabel = _labelFactory.createLabel(activePlayer(), opponent, _activeLabelType);
+        activePlayer().setActiveLabel(newLabel);
+    }
+
+    private Player opponentFor(Player player) {
+        for (Player p : _playerList) {
+            if (!p.equals(player)) {
+                return p;
+            }
+        }
+        return player;
+    }
+
+    private LabelType detectLabelType(Label label) {
+        if (label instanceof HiddenLabel) {
+            return LabelType.HIDDEN;
+        }
+        if (label instanceof DelegatedLabel) {
+            return LabelType.DELEGATED;
+        }
+        return LabelType.NORMAL;
     }
 
     private static int WINNER_LINE_LENGTH = 5;
