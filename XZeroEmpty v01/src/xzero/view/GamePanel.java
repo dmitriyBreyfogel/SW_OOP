@@ -1,6 +1,11 @@
 package xzero.view;
 
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.Box;
@@ -13,6 +18,8 @@ import xzero.model.events.PlayerActionEvent;
 import xzero.model.events.PlayerActionListener;
 import xzero.model.labels.Label;
 import xzero.model.labels.LabelType;
+import xzero.model.labels.DelegatedLabel;
+import xzero.model.labels.HiddenLabel;
 
 /**
  * Главное окно приложения: собирает панель информации, поле и меню, подписывается
@@ -47,7 +54,7 @@ public class GamePanel extends JFrame {
         pack();
         setResizable(false);
     }
-
+  
     private void startNewGame() {
         model.start();
         fieldPanel.buildField();
