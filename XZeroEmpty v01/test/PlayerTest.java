@@ -153,4 +153,56 @@ class PlayerTest {
         Player p = new Player(f, "X");
         assertThrows(IllegalArgumentException.class, () -> p.setActiveLabel(null));
     }
+
+    @Test
+    @DisplayName("Тест №10: удалённый слушатель не получает события")
+    void removedListenerDoesNotFire() {
+        GameField f = preparedField(3, 3);
+        Player p = new Player(f, "X");
+        AtomicInteger cnt = new AtomicInteger();
+
+        PlayerActionListener listener = new PlayerActionListener() {
+            @Override
+            public void labelisPlaced(PlayerActionEvent e) {
+                cnt.incrementAndGet();
+            }
+
+            @Override
+            public void labelIsReceived(PlayerActionEvent e) {
+                cnt.incrementAndGet();
+            }
+        };
+
+        p.addPlayerActionListener(listener);
+        p.removePlayerActionListener(listener);
+
+        p.setActiveLabel(labelFor(f, p));
+        p.setLabelTo(new Point(1, 1));
+
+        assertEquals(0, cnt.get());
+    }
+
+    @Test
+    @DisplayName("Тест №11: имя игрока можно изменить")
+    void playerNameCanBeChanged() {
+        GameField f = preparedField(1, 1);
+        Player p = new Player(f, "X");
+
+        p.setName("Новое имя");
+
+        assertEquals("Новое имя", p.name());
+    }
+
+    @Test
+    @DisplayName("Тест №12: setLabelTo сохраняет ссылку на игрока, выдавшего метку")
+    void placedLabelKeepsIssuer() {
+        GameField f = preparedField(2, 2);
+        Player p = new Player(f, "X");
+
+        p.setActiveLabel(labelFor(f, p));
+        p.setLabelTo(new Point(1, 1));
+
+        Label placed = f.label(new Point(1, 1));
+        assertEquals(p, placed.getPlacedBy());
+    }
 }

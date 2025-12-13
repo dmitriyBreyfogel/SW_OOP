@@ -132,4 +132,26 @@ class GameFieldTest {
         f.setSize(2, 2);
         assertNull(f.label(new Point(3, 3)));
     }
+
+    @Test
+    @DisplayName("Тест №11: clear очищает все ячейки и метки")
+    void clearRemovesAllCellsAndLabels() {
+        GameField f = makeField(2, 2);
+        Label l = labelFor(f, new Player(f, "X"));
+        f.setLabel(new Point(1, 1), l);
+
+        assertEquals(1, f.labels().size());
+
+        f.clear();
+
+        assertEquals(0, f.labels().size());
+        assertNull(f.label(new Point(1, 1)));
+    }
+
+    @Test
+    @DisplayName("Тест №12: установка null-метки запрещена")
+    void cannotSetNullLabel() {
+        GameField f = makeField(2, 2);
+        assertThrows(IllegalArgumentException.class, () -> f.setLabel(new Point(1, 1), null));
+    }
 }

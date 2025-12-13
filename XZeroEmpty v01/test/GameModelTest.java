@@ -162,4 +162,30 @@ class GameModelTest {
         model.activePlayer().setLabelTo(new Point(1, 1));
         assertEquals(0, model.passesLeftFor(p));
     }
+
+    @Test
+    @DisplayName("Тест №13: выбор типа метки привязан к игроку и сохраняется между ходами")
+    void labelTypeStoredPerPlayer() {
+        model.setActiveLabelType(LabelType.HIDDEN);
+        assertEquals(LabelType.HIDDEN, model.activeLabelType());
+
+        model.activePlayer().setLabelTo(new Point(1, 1)); // переходим к другому игроку
+        assertEquals(LabelType.NORMAL, model.activeLabelType());
+
+        model.activePlayer().setLabelTo(new Point(2, 1)); // возвращаемся к первому
+        assertEquals(LabelType.HIDDEN, model.activeLabelType());
+        assertEquals("?", model.activePlayer().activeLabel().symbol());
+    }
+
+    @Test
+    @DisplayName("Тест №14: setActiveLabelType не принимает null")
+    void cannotSetNullLabelType() {
+        assertThrows(IllegalArgumentException.class, () -> model.setActiveLabelType(null));
+    }
+
+    @Test
+    @DisplayName("Тест №15: passesLeftFor возвращает 0 для неизвестного игрока")
+    void passesLeftForUnknownPlayerIsZero() {
+        assertEquals(0, model.passesLeftFor(new Player(model.field(), "Z")));
+    }
 }
