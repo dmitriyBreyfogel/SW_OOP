@@ -12,6 +12,9 @@ import xzero.model.factory.LabelFactory;
 import xzero.model.labels.Label;
 import xzero.model.labels.LabelType;
 import xzero.model.navigation.Direction;
+import xzero.model.setup.FieldInitializer;
+import xzero.model.setup.GridFieldInitializer;
+import xzero.model.turn.TurnManager;
 
 /**
 /* Aбстракция всей игры; генерирует стартовую обстановку; поочередно передает 
@@ -20,11 +23,8 @@ import xzero.model.navigation.Direction;
 */
 public class GameModel {
     // -------------------------------- Поле -------------------------------------
-    private final GameField _field = new GameField();
-
-    private static final int PASS_LIMIT_PER_PLAYER = 1;
-
-    private final ArrayList<Integer> _passesLeft = new ArrayList<>();
+    private final GameField _field;
+    private final FieldInitializer _fieldInitializer;
 
     public GameField field(){
         return _field;
@@ -32,68 +32,68 @@ public class GameModel {
 
     // -------------------------------- Игроки -----------------------------------
 
-    private ArrayList<Player> _playerList = new ArrayList<>();
-    private int _activePlayer;
+    private final List<Player> _playerList = new ArrayList<>();
+    private final TurnManager _turnManager;
 
     private LabelType _activeLabelType = LabelType.NORMAL;
-    private final ArrayList<LabelType> _playerLabelTypes = new ArrayList<>();
 
     public Player activePlayer(){
-        return _playerList.get(_activePlayer);
+        return _turnManager.activePlayer();
     }
 
     public GameModel() {
-        field().setSize(5, 5);
-
-        Player p;
-        PlayerObserver observer = new PlayerObserver(this);
-
-        p = new Player(field(), "X");
-        p.addPlayerActionListener(observer);
-        _playerList.add(p);
-        _passesLeft.add(PASS_LIMIT_PER_PLAYER);
-        _playerLabelTypes.add(LabelType.NORMAL);
-        _activePlayer = 0;
-
-        p = new Player(field(), "O");
-        p.addPlayerActionListener(observer);
-        _playerList.add(p);
-        _passesLeft.add(PASS_LIMIT_PER_PLAYER);
-        _playerLabelTypes.add(LabelType.NORMAL);
+        this(new GameField(), new CellFactory(), new LabelFactory(),
+                new GridFieldInitializer(5, 5));
     }
 
-    // ---------------------- Порождение обстановки на поле ---------------------
-    private CellFactory _cellFactory = new CellFactory();
-
-    private void generateField() {
-
-        field().clear();
-        field().setSize(5, 5);
-        for(int row = 1; row <= field().height(); row++) {
-            for(int col = 1; col <= field().width(); col++) {
-                field().setCell(new Point(col, row), _cellFactory.createCell());
-            }
+    public GameModel(GameField field, CellFactory cellFactory, LabelFactory labelFactory,
+                     FieldInitializer fieldInitializer) {
+        if (field == null || cellFactory == null || labelFactory == null || fieldInitializer == null) {
+            throw new IllegalArgumentException("Все зависимости GameModel должны быть заданы");
         }
+        this._field = field;
+        this._cellFactory = cellFactory;
+        this._labelFactory = labelFactory;
+        this._fieldInitializer = fieldInitializer;
+
+        PlayerObserver observer = new PlayerObserver(this);
+
+        Player xPlayer = new Player(field(), "X");
+        xPlayer.addPlayerActionListener(observer);
+        _playerList.add(xPlayer);
+
+        Player oPlayer = new Player(field(), "O");
+        oPlayer.addPlayerActionListener(observer);
+        _playerList.add(oPlayer);
+
+        _turnManager = new TurnManager(_playerList, PASS_LIMIT_PER_PLAYER);
+    }
+
+    private static final int PASS_LIMIT_PER_PLAYER = 1;
+    private static final int WINNER_LINE_LENGTH = 5;
+
+    private final CellFactory _cellFactory;
+    private final LabelFactory _labelFactory;
+
+    // ---------------------- Порождение обстановки на поле ---------------------
+    private void generateField() {
+        _fieldInitializer.prepare(field(), _cellFactory);
     }
 
     // ----------------------------- Игровой процесс ----------------------------
     public void start() {
         generateField();
 
-        resetPassCounters();
-        resetLabelTypes();
-
-        _activePlayer = _playerList.size()-1;
-        exchangePlayer();
+        _turnManager.resetForNewGame();
+        _activeLabelType = _turnManager.activeLabelType();
+        refreshActiveLabel();
+        firePlayerExchanged(activePlayer());
     }
 
-    private LabelFactory _labelFactory = new LabelFactory();
-
     private void exchangePlayer() {
-        _activePlayer++;
-        if(_activePlayer >= _playerList.size())     _activePlayer = 0;
+        _turnManager.advanceToNextPlayer();
 
-        _activeLabelType = _playerLabelTypes.get(_activePlayer);
+        _activeLabelType = _turnManager.activeLabelType();
         refreshActiveLabel();
 
         firePlayerExchanged(activePlayer());
@@ -104,19 +104,14 @@ public class GameModel {
         if (activePlayer().activeLabel() == null) {
             throw new IllegalStateException("Нельзя передать ход: у активного игрока нет активной метки");
         }
-        int left = _passesLeft.get(_activePlayer);
-        if (left <= 0) {
-            throw new IllegalStateException("Лимит передач хода исчерпан");
-        }
+
+        _turnManager.consumePassOfActive();
 
         activePlayer().takeActiveLabel();
 
-        _passesLeft.set(_activePlayer, left - 1);
+        _turnManager.advanceToNextPlayer();
 
-        _activePlayer++;
-        if (_activePlayer >= _playerList.size()) _activePlayer = 0;
-
-        _activeLabelType = _playerLabelTypes.get(_activePlayer);
+        _activeLabelType = _turnManager.activeLabelType();
         refreshActiveLabel();
 
         firePlayerExchanged(activePlayer());
@@ -126,8 +121,8 @@ public class GameModel {
         if (labelType == null) {
             throw new IllegalArgumentException("Нельзя выбрать пустой тип метки");
         }
+        _turnManager.setActiveLabelType(labelType);
         _activeLabelType = labelType;
-        _playerLabelTypes.set(_activePlayer, labelType);
         refreshActiveLabel();
     }
 
@@ -150,8 +145,6 @@ public class GameModel {
         return player;
     }
 
-    private static int WINNER_LINE_LENGTH = 5;
-
     private Player determineWinner(){
         for(int row = 1; row <= field().height(); row++) {
             for(int col = 1; col <= field().width(); col++) {
@@ -172,27 +165,11 @@ public class GameModel {
         return null;
     }
 
-    private void resetPassCounters() {
-        for (int i = 0; i < _passesLeft.size(); i++) {
-            _passesLeft.set(i, PASS_LIMIT_PER_PLAYER);
-        }
-    }
-
     /**
      * Возвращает количество доступных пасов для указанного игрока.
      */
     public int passesLeftFor(Player player) {
-        int index = _playerList.indexOf(player);
-        if (index < 0) {
-            return 0;
-        }
-        return _passesLeft.get(index);
-    }
-
-    private void resetLabelTypes() {
-        for (int i = 0; i < _playerLabelTypes.size(); i++) {
-            _playerLabelTypes.set(i, LabelType.NORMAL);
-        }
+        return _turnManager.passesLeftFor(player);
     }
 
     // ------------------------- Реагируем на действия игрока ------------------
@@ -218,7 +195,7 @@ public class GameModel {
     }
 
     // ------------------------ Порождает события игры ----------------------------
-    private ArrayList _listenerList = new ArrayList();
+    private final List<GameListener> _listenerList = new ArrayList<>();
 
     public void addGameListener(GameListener l) {
         _listenerList.add(l);
@@ -231,22 +208,22 @@ public class GameModel {
     protected void fireGameFinished(Player winner) {
         GameEvent event = new GameEvent(this);
         event.setPlayer(winner);
-        for (Object listner : _listenerList)
+        for (GameListener listener : _listenerList)
         {
-            ((GameListener)listner).gameFinished(event);
+            listener.gameFinished(event);
         }
     }
 
     protected void firePlayerExchanged(Player p) {
         GameEvent event = new GameEvent(this);
         event.setPlayer(p);
-        for (Object listner : _listenerList) {
-            ((GameListener)listner).playerExchanged(event);
+        for (GameListener listener : _listenerList) {
+            listener.playerExchanged(event);
         }
     }
 
     // --------------------- Порождает события, связанные с игроками -------------
-    private ArrayList _playerListenerList = new ArrayList();
+    private final List<PlayerActionListener> _playerListenerList = new ArrayList<>();
 
     public void addPlayerActionListener(PlayerActionListener l) {
         _playerListenerList.add(l);
@@ -257,14 +234,14 @@ public class GameModel {
     }
 
     protected void fireLabelIsPlaced(PlayerActionEvent e) {
-        for (Object listner : _playerListenerList) {
-            ((PlayerActionListener)listner).labelIsPlaced(e);
+        for (PlayerActionListener listener : _playerListenerList) {
+            listener.labelIsPlaced(e);
         }
     }
 
     protected void fireLabelIsRecived(PlayerActionEvent e) {
-        for (Object listner : _playerListenerList) {
-            ((PlayerActionListener)listner).labelIsReceived(e);
+        for (PlayerActionListener listener : _playerListenerList) {
+            listener.labelIsReceived(e);
         }
     }
 }
