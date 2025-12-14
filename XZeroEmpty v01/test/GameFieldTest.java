@@ -177,3 +177,94 @@ class GameFieldTest {
         assertTrue(line.isEmpty());
     }
 }
+
+    @Test
+    @DisplayName("Тест №15: линия обрывается на пустой ячейке")
+    void labelLineStopsOnEmptyCell() {
+        GameField f = makeField(4, 1);
+        Player p = new Player(f, "X");
+        f.setLabel(new Point(1, 1), labelFor(f, p));
+        f.setLabel(new Point(3, 1), labelFor(f, p));
+
+        List<Label> line = f.labelLine(new Point(1, 1), Direction.east());
+        assertEquals(1, line.size());
+    }
+
+    @Test
+    @DisplayName("Тест №16: вертикальная линия строится корректно")
+    void labelLineVertical() {
+        GameField f = makeField(1, 4);
+        Player p = new Player(f, "X");
+        for (int y = 1; y <= 4; y++) {
+            f.setLabel(new Point(1, y), labelFor(f, p));
+        }
+        List<Label> line = f.labelLine(new Point(1, 1), Direction.south());
+        assertEquals(4, line.size());
+    }
+
+    @Test
+    @DisplayName("Тест №17: setSize меняет ширину и высоту поля")
+    void setSizeUpdatesDimensions() {
+        GameField f = new GameField();
+        f.setSize(7, 8);
+        assertEquals(7, f.width());
+        assertEquals(8, f.height());
+    }
+
+    @Test
+    @DisplayName("Тест №18: попытка установки метки в удалённую ячейку после resize запрещена")
+    void cannotSetLabelAfterCellTrimmedByResize() {
+        GameField f = makeField(3, 3);
+        f.setSize(2, 2);
+        Player p = new Player(f, "X");
+        assertThrows(IllegalStateException.class,
+                () -> f.setLabel(new Point(3, 3), labelFor(f, p)));
+    }
+
+    @Test
+    @DisplayName("Тест №19: setCell замещает существующую ячейку на позиции")
+    void setCellReplacesPrevious() {
+        GameField f = new GameField();
+        f.setSize(1, 1);
+        Cell first = new Cell();
+        first.setField(f);
+        first.setPosition(new Point(1, 1));
+        f.setCell(new Point(1, 1), first);
+
+        Cell second = new Cell();
+        second.setField(f);
+        second.setPosition(new Point(1, 1));
+        f.setCell(new Point(1, 1), second);
+
+        f.setLabel(new Point(1, 1), labelFor(f, new Player(f, "X")));
+
+        assertNull(first.label());
+        assertSame(second, f.label(new Point(1, 1)).cell());
+    }
+
+    @Test
+    @DisplayName("Тест №20: диагональ на северо-запад строится корректно")
+    void labelLineNorthWest() {
+        GameField f = makeField(3, 3);
+        Player p = new Player(f, "X");
+        f.setLabel(new Point(3, 3), labelFor(f, p));
+        f.setLabel(new Point(2, 2), labelFor(f, p));
+        f.setLabel(new Point(1, 1), labelFor(f, p));
+
+        List<Label> line = f.labelLine(new Point(3, 3), Direction.northWest());
+        assertEquals(3, line.size());
+    }
+
+    @Test
+    @DisplayName("Тест №21: labels собирает метки независимо от порядка ячеек")
+    void labelsCollectsFromAllCells() {
+        GameField f = makeField(2, 2);
+        Player p = new Player(f, "X");
+        f.setLabel(new Point(2, 2), labelFor(f, p));
+        f.setLabel(new Point(1, 1), labelFor(f, p));
+
+        List<Label> labels = f.labels();
+        assertEquals(2, labels.size());
+        assertTrue(labels.stream().allMatch(l -> l.owner().equals(p)));
+    }
+}

@@ -205,4 +205,53 @@ class PlayerTest {
         Label placed = f.label(new Point(1, 1));
         assertEquals(p, placed.getPlacedBy());
     }
+
+    @Test
+    @DisplayName("Тест №13: список labels немодифицируемый")
+    void labelsListIsUnmodifiable() {
+        GameField f = preparedField(2, 2);
+        Player p = new Player(f, "X");
+        f.setLabel(new Point(1, 1), labelFor(f, p));
+
+        assertThrows(UnsupportedOperationException.class, () -> p.labels().add(labelFor(f, p)));
+    }
+
+    @Test
+    @DisplayName("Тест №14: добавление null-слушателя безопасно")
+    void addingNullListenerIsSafe() {
+        GameField f = preparedField(1, 1);
+        Player p = new Player(f, "X");
+        assertDoesNotThrow(() -> p.addPlayerActionListener(null));
+    }
+
+    @Test
+    @DisplayName("Тест №15: takeActiveLabel сохраняет информацию о выдавшем")
+    void takeActiveLabelKeepsPlacedBy() {
+        GameField f = preparedField(1, 1);
+        Player p = new Player(f, "X");
+        Label l = labelFor(f, p);
+        p.setActiveLabel(l);
+        Label taken = p.takeActiveLabel();
+
+        assertEquals(p, taken.getPlacedBy());
+    }
+
+    @Test
+    @DisplayName("Тест №16: нельзя второй раз ставить уже израсходованную метку")
+    void cannotPlaceConsumedLabelTwice() {
+        GameField f = preparedField(2, 2);
+        Player p = new Player(f, "X");
+        p.setActiveLabel(labelFor(f, p));
+        p.setLabelTo(new Point(1, 1));
+        assertThrows(IllegalStateException.class, () -> p.setLabelTo(new Point(2, 2)));
+    }
+
+    @Test
+    @DisplayName("Тест №17: попытка поставить метку за границы поля вызывает исключение")
+    void cannotPlaceOutsideField() {
+        GameField f = preparedField(2, 2);
+        Player p = new Player(f, "X");
+        p.setActiveLabel(labelFor(f, p));
+        assertThrows(IndexOutOfBoundsException.class, () -> p.setLabelTo(new Point(3, 3)));
+    }
 }

@@ -100,4 +100,41 @@ class LabelFactoryTest {
         assertEquals(current, label.owner());
         assertEquals("?", label.symbol());
     }
+
+    @Test
+    @DisplayName("Тест №9: скрытая метка через базовый метод маскирует владельца")
+    void hiddenLabelMasksOwnerViaBaseMethod() {
+        LabelFactory factory = new LabelFactory();
+        Player owner = player("X");
+
+        Label label = factory.createLabel(owner, LabelType.HIDDEN);
+
+        assertEquals(owner, label.owner());
+        assertEquals("?", label.symbol());
+    }
+
+    @Test
+    @DisplayName("Тест №10: фабрика возвращает новые экземпляры меток")
+    void factoryCreatesDistinctInstances() {
+        LabelFactory factory = new LabelFactory();
+        Player owner = player("X");
+
+        Label first = factory.createLabel(owner, LabelType.NORMAL);
+        Label second = factory.createLabel(owner, LabelType.NORMAL);
+
+        assertNotSame(first, second);
+    }
+
+    @Test
+    @DisplayName("Тест №11: делегированная метка следует за изменением имени противника")
+    void delegatedLabelReflectsOpponentName() {
+        LabelFactory factory = new LabelFactory();
+        Player current = player("X");
+        Player opponent = player("O");
+
+        opponent.setName("Opponent");
+        Label delegated = factory.createLabel(current, opponent, LabelType.DELEGATED);
+
+        assertEquals("Opponent", delegated.symbol());
+    }
 }
