@@ -316,3 +316,91 @@ class GameModelTest {
         assertEquals("X", winnerRef.get().name());
     }
 }
+
+    @Test
+    @DisplayName("Тест №19: повторный старт очищает поле и создаёт новое")
+    void startResetsFieldState() {
+        model.activePlayer().setLabelTo(new Point(1, 1));
+        model.start();
+
+        assertEquals(5, model.field().width());
+        assertEquals(5, model.field().height());
+        assertNull(model.field().label(new Point(1, 1)));
+    }
+
+    @Test
+    @DisplayName("Тест №20: после двух ходов ход возвращается первому игроку")
+    void turnCyclesBetweenPlayers() {
+        Player first = model.activePlayer();
+        model.activePlayer().setLabelTo(new Point(1, 1));
+        model.activePlayer().setLabelTo(new Point(1, 2));
+        assertSame(first, model.activePlayer());
+    }
+
+    @Test
+    @DisplayName("Тест №21: passTurn генерирует playerExchanged")
+    void passTurnFiresPlayerExchanged() {
+        AtomicInteger cnt = new AtomicInteger();
+        model.addGameListener(new GameListener() {
+            public void gameFinished(GameEvent e) {}
+            public void playerExchanged(GameEvent e) { cnt.incrementAndGet(); }
+        });
+
+        int before = cnt.get();
+        model.passTurn();
+        assertEquals(before + 1, cnt.get());
+    }
+
+    @Test
+    @DisplayName("Тест №22: делегированная метка принадлежит сопернику")
+    void delegatedLabelBelongsToOpponent() {
+        model.setActiveLabelType(LabelType.DELEGATED);
+        Label label = model.activePlayer().activeLabel();
+
+        assertNotEquals(model.activePlayer(), label.owner());
+        assertEquals("O", label.owner().name());
+    }
+
+    @Test
+    @DisplayName("Тест №23: при передаче хода активируется тип метки нового игрока")
+    void passTurnRestoresNextPlayerLabelType() {
+        model.setActiveLabelType(LabelType.HIDDEN);
+        model.passTurn();
+
+        assertEquals(LabelType.NORMAL, model.activeLabelType());
+        assertEquals("O", model.activePlayer().activeLabel().symbol());
+    }
+
+    @Test
+    @DisplayName("Тест №24: рестарт возвращает лимит пасов обоим игрокам")
+    void restartRestoresPassesForAll() {
+        Player first = model.activePlayer();
+        model.passTurn();
+        model.activePlayer().setLabelTo(new Point(1, 1));
+        model.start();
+
+        assertEquals(1, model.passesLeftFor(first));
+        assertEquals(1, model.passesLeftFor(model.activePlayer()));
+    }
+
+    @Test
+    @DisplayName("Тест №25: победа определяется по диагонали из пяти меток")
+    void winnerDetectedOnDiagonal() {
+        AtomicReference<Player> winnerRef = new AtomicReference<>();
+        model.addGameListener(new GameListener() {
+            public void gameFinished(GameEvent e) { winnerRef.set(e.player()); }
+            public void playerExchanged(GameEvent e) {}
+        });
+
+        for (int i = 1; i <= 5; i++) {
+            Player current = model.activePlayer();
+            current.setLabelTo(new Point(i, i));
+            if (i < 5) {
+                model.activePlayer().setLabelTo(new Point(i, 5));
+            }
+        }
+
+        assertNotNull(winnerRef.get());
+        assertEquals("X", winnerRef.get().name());
+    }
+}
