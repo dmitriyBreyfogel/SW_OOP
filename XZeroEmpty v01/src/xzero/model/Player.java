@@ -99,7 +99,7 @@ public class Player {
         event.setPlayer(this);
         event.setLabel(label);
         for (PlayerActionListener listener : _listenerList) {
-            listener.labelisPlaced(event);
+            listener.labelIsPlaced(event);
         }
     }
 

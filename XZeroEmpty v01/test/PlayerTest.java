@@ -74,7 +74,7 @@ class PlayerTest {
 
         p.addPlayerActionListener(new PlayerActionListener() {
             @Override
-            public void labelisPlaced(PlayerActionEvent e) {
+            public void labelIsPlaced(PlayerActionEvent e) {
             }
 
             @Override
@@ -97,7 +97,7 @@ class PlayerTest {
 
         p.addPlayerActionListener(new PlayerActionListener() {
             @Override
-            public void labelisPlaced(PlayerActionEvent e) {
+            public void labelIsPlaced(PlayerActionEvent e) {
                 cnt.incrementAndGet();
             }
 
@@ -163,7 +163,7 @@ class PlayerTest {
 
         PlayerActionListener listener = new PlayerActionListener() {
             @Override
-            public void labelisPlaced(PlayerActionEvent e) {
+            public void labelIsPlaced(PlayerActionEvent e) {
                 cnt.incrementAndGet();
             }
 

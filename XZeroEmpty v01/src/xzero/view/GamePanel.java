@@ -72,7 +72,7 @@ public class GamePanel extends JFrame {
 
     private class PlayerObserver implements PlayerActionListener {
         @Override
-        public void labelisPlaced(PlayerActionEvent event) {
+        public void labelIsPlaced(PlayerActionEvent event) {
             drawLabelOnField(event.label());
             setInteractionEnabled(false);
         }

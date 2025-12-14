@@ -258,7 +258,7 @@ public class GameModel {
 
     protected void fireLabelIsPlaced(PlayerActionEvent e) {
         for (Object listner : _playerListenerList) {
-            ((PlayerActionListener)listner).labelisPlaced(e);
+            ((PlayerActionListener)listner).labelIsPlaced(e);
         }
     }
 

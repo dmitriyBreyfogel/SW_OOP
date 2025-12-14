@@ -14,7 +14,7 @@ public class PlayerObserver implements PlayerActionListener {
     }
 
     @Override
-    public void labelisPlaced(PlayerActionEvent e) {
+    public void labelIsPlaced(PlayerActionEvent e) {
         gameModel.handleLabelPlaced(e);
     }
 

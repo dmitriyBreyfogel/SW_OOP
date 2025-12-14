@@ -99,7 +99,7 @@ class GameModelTest {
     void labelIsReceivedProxied() {
         AtomicInteger cnt = new AtomicInteger();
         model.addPlayerActionListener(new PlayerActionListener() {
-            public void labelisPlaced(PlayerActionEvent e) {}
+            public void labelIsPlaced(PlayerActionEvent e) {}
             public void labelIsReceived(PlayerActionEvent e) { cnt.incrementAndGet(); }
         });
         model.start();
@@ -111,7 +111,7 @@ class GameModelTest {
     void labelIsPlacedProxied() {
         AtomicInteger cnt = new AtomicInteger();
         model.addPlayerActionListener(new PlayerActionListener() {
-            public void labelisPlaced(PlayerActionEvent e) { cnt.incrementAndGet(); }
+            public void labelIsPlaced(PlayerActionEvent e) { cnt.incrementAndGet(); }
             public void labelIsReceived(PlayerActionEvent e) {}
         });
         model.activePlayer().setLabelTo(new Point(1, 1));
