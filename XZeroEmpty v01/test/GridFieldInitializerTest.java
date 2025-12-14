@@ -116,7 +116,10 @@ class GridFieldInitializerTest {
         Player p = new Player(field, "P");
         for (int y = 1; y <= field.height(); y++) {
             for (int x = 1; x <= field.width(); x++) {
-                assertDoesNotThrow(() -> field.setLabel(new Point(x, y), new NormalLabel(p)));
+                final int fx = x;
+                final int fy = y;
+
+                assertDoesNotThrow(() -> field.setLabel(new Point(fx, fy), new NormalLabel(p)));
             }
         }
     }
