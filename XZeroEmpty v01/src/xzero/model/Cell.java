@@ -13,7 +13,10 @@ public class Cell {
     private Point _position;
 
     public void setPosition(Point pos){
-        _position = pos;
+        if (pos == null) {
+            throw new IllegalArgumentException("Позиция ячейки не может быть null");
+        }
+        _position = new Point(pos);
     }
 
     public Point position(){
@@ -24,6 +27,12 @@ public class Cell {
     private GameField _field;
 
     public void setField(GameField f){
+        if (f == null) {
+            throw new IllegalArgumentException("Поле ячейки не может быть null");
+        }
+        if (_field != null && _field != f) {
+            throw new IllegalStateException("Ячейка уже принадлежит другому полю");
+        }
         _field = f;
     }
 

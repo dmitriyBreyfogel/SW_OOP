@@ -4,6 +4,8 @@ import java.util.List;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import xzero.model.labels.Label;
 import xzero.model.navigation.Direction;
@@ -14,24 +16,31 @@ import xzero.model.navigation.Shift;
  */
 public class GameField {
     // ------------------------------ Ячейки ---------------------------------------
-    private ArrayList<Cell> _cellPool = new ArrayList();
+    private final Map<Point, Cell> _cellPool = new HashMap<>();
 
     Cell cell(Point pos) {
-        for(Cell obj : _cellPool) {
-            if(obj.position().equals(pos))
-            { return obj; }
+        if (pos == null) {
+            return null;
         }
-
-        return null;
+        return _cellPool.get(new Point(pos));
     }
 
     public void setCell(Point pos, Cell cell) {
-        removeCell(pos);
+        if (pos == null) {
+            throw new IllegalArgumentException("Позиция ячейки не может быть null");
+        }
+        if (cell == null) {
+            throw new IllegalArgumentException("Ячейка не может быть null");
+        }
+
+        Point safePoint = new Point(pos);
+
+        removeCell(safePoint);
 
         cell.setField(this);
-        cell.setPosition(pos);
+        cell.setPosition(safePoint);
 
-        _cellPool.add(cell);
+        _cellPool.put(safePoint, cell);
     }
 
     public void clear(){
@@ -39,8 +48,10 @@ public class GameField {
     }
 
     private void removeCell(Point pos){
-        Cell obj = cell(pos);
-        if(obj != null)     _cellPool.remove(obj);
+        if (pos == null) {
+            return;
+        }
+        _cellPool.remove(new Point(pos));
     }
 
     // ------------------------------ Метки ---------------------------------------
@@ -68,12 +79,12 @@ public class GameField {
         obj.placeLabel(label);
     }
 
-    private ArrayList<Label> _labelPool = new ArrayList();
+    private ArrayList<Label> _labelPool = new ArrayList<>();
 
     public List<Label> labels() {
         _labelPool.clear();
 
-        for(Cell obj : _cellPool) {
+        for(Cell obj : _cellPool.values()) {
             Label l = obj.label();
             if(l != null) {
                 _labelPool.add(obj.label());
@@ -121,7 +132,7 @@ public class GameField {
         _width = width;
         _height = height;
 
-        _cellPool.removeIf(c -> !containsRange(c.position()));
+        _cellPool.entrySet().removeIf(entry -> !containsRange(entry.getKey()));
     }
 
     public int width() {
