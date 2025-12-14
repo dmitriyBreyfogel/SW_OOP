@@ -4,11 +4,13 @@ import xzero.model.Player;
 
 public class NormalLabel extends Label {
 
-    // Логический владелец метки
     private final Player _owner;
 
     /**
      * Создания обычной метки, принадлежащей конкретному игроку
+     *
+     * @param owner - владелец метки
+     * @throws IllegalArgumentException
      */
     public NormalLabel(Player owner) {
         if (owner == null) {
@@ -20,6 +22,8 @@ public class NormalLabel extends Label {
 
     /**
      * Получение логического владельца метки
+     *
+     * @return владелец метки
      */
     @Override
     public Player owner() {
@@ -28,6 +32,8 @@ public class NormalLabel extends Label {
 
     /**
      * Получение символа отображения
+     *
+     * @return символ метки
      */
     @Override
     public String symbol() {

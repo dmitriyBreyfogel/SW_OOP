@@ -41,8 +41,8 @@ class GameModelTest {
     void playerExchangedOnStart() {
         AtomicReference<Player> last = new AtomicReference<>();
         model.addGameListener(new GameListener() {
-            public void gameFinished(GameEvent e) {}
-            public void playerExchanged(GameEvent e) { last.set(e.player()); }
+            public void gameFinished(GameEvent event) {}
+            public void playerExchanged(GameEvent event) { last.set(event.player()); }
         });
         model.start();
         assertNotNull(last.get());
@@ -99,8 +99,8 @@ class GameModelTest {
     void labelIsReceivedProxied() {
         AtomicInteger cnt = new AtomicInteger();
         model.addPlayerActionListener(new PlayerActionListener() {
-            public void labelIsPlaced(PlayerActionEvent e) {}
-            public void labelIsReceived(PlayerActionEvent e) { cnt.incrementAndGet(); }
+            public void labelIsPlaced(PlayerActionEvent event) {}
+            public void labelIsReceived(PlayerActionEvent event) { cnt.incrementAndGet(); }
         });
         model.start();
         assertTrue(cnt.get() >= 1);
@@ -111,8 +111,8 @@ class GameModelTest {
     void labelIsPlacedProxied() {
         AtomicInteger cnt = new AtomicInteger();
         model.addPlayerActionListener(new PlayerActionListener() {
-            public void labelIsPlaced(PlayerActionEvent e) { cnt.incrementAndGet(); }
-            public void labelIsReceived(PlayerActionEvent e) {}
+            public void labelIsPlaced(PlayerActionEvent event) { cnt.incrementAndGet(); }
+            public void labelIsReceived(PlayerActionEvent event) {}
         });
         model.activePlayer().setLabelTo(new Point(1, 1));
         assertEquals(1, cnt.get());
@@ -123,8 +123,8 @@ class GameModelTest {
     void winnerDetected() {
         AtomicReference<Player> winnerRef = new AtomicReference<>();
         model.addGameListener(new GameListener() {
-            public void gameFinished(GameEvent e) { winnerRef.set(e.player()); }
-            public void playerExchanged(GameEvent e) {}
+            public void gameFinished(GameEvent event) { winnerRef.set(event.player()); }
+            public void playerExchanged(GameEvent event) {}
         });
 
         for (int x = 1; x <= 5; x++) {
@@ -254,8 +254,8 @@ class GameModelTest {
     void passTurnFiresPlayerExchanged() {
         AtomicInteger cnt = new AtomicInteger();
         model.addGameListener(new GameListener() {
-            public void gameFinished(GameEvent e) {}
-            public void playerExchanged(GameEvent e) { cnt.incrementAndGet(); }
+            public void gameFinished(GameEvent event) {}
+            public void playerExchanged(GameEvent event) { cnt.incrementAndGet(); }
         });
 
         int before = cnt.get();
@@ -300,8 +300,8 @@ class GameModelTest {
     void winnerDetectedOnDiagonal() {
         AtomicReference<Player> winnerRef = new AtomicReference<>();
         model.addGameListener(new GameListener() {
-            public void gameFinished(GameEvent e) { winnerRef.set(e.player()); }
-            public void playerExchanged(GameEvent e) {}
+            public void gameFinished(GameEvent event) { winnerRef.set(event.player()); }
+            public void playerExchanged(GameEvent event) {}
         });
 
         for (int i = 1; i <= 5; i++) {

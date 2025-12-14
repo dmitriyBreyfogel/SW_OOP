@@ -13,7 +13,7 @@ import xzero.model.GameModel;
 import xzero.model.labels.Label;
 
 /**
- * Панель игрового поля, отвечающая за отображение ячеек и обработку кликов по ним.
+ * Панель игрового поля, отображающая сетку ячеек и обрабатывающая клики по ним
  */
 public class FieldPanel extends JPanel {
 
@@ -23,6 +23,12 @@ public class FieldPanel extends JPanel {
     private final Consumer<Point> onCellClicked;
     private final Map<Point, CellButton> buttons = new HashMap<>();
 
+    /**
+     * Создаёт панель игрового поля, связанную с моделью игры
+     *
+     * @param model модель игры
+     * @param onCellClicked обработчик клика по ячейке поля
+     */
     public FieldPanel(GameModel model, Consumer<Point> onCellClicked) {
         this.model = model;
         this.onCellClicked = onCellClicked;
@@ -30,7 +36,7 @@ public class FieldPanel extends JPanel {
     }
 
     /**
-     * Создаёт или пересоздаёт сетку кнопок на поле.
+     * Создаёт или пересоздаёт сетку кнопок в соответствии с размерами поля
      */
     public void buildField() {
         removeAll();
@@ -58,7 +64,9 @@ public class FieldPanel extends JPanel {
     }
 
     /**
-     * Перерисовывает метку в указанной позиции.
+     * Отображает метку в соответствующей ячейке игрового поля
+     *
+     * @param label метка, которую необходимо отрисовать
      */
     public void drawLabel(Label label) {
         CellButton button = buttons.get(label.cell().position());
@@ -69,7 +77,9 @@ public class FieldPanel extends JPanel {
     }
 
     /**
-     * Управляет доступностью ячеек в зависимости от занятости.
+     * Управляет возможностью взаимодействия с ячейками поля
+     *
+     * @param enabled true — разрешить взаимодействие, false — запретить
      */
     public void setInteractionEnabled(boolean enabled) {
         for (Map.Entry<Point, CellButton> entry : buttons.entrySet()) {
@@ -85,6 +95,12 @@ public class FieldPanel extends JPanel {
         }
     }
 
+    /**
+     * Создаёт кнопку ячейки и регистрирует обработчик клика
+     *
+     * @param position позиция ячейки на поле
+     * @return кнопка ячейки
+     */
     private CellButton createCellButton(Point position) {
         CellButton button = new CellButton(position);
         ActionListener listener = e -> handleCellClick(button);
@@ -92,6 +108,11 @@ public class FieldPanel extends JPanel {
         return button;
     }
 
+    /**
+     * Обрабатывает клик по кнопке ячейки и уведомляет внешний обработчик
+     *
+     * @param button кнопка ячейки, по которой был выполнен клик
+     */
     private void handleCellClick(CellButton button) {
         button.setEnabled(false);
         onCellClicked.accept(button.position());

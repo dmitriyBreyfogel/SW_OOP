@@ -19,8 +19,7 @@ import xzero.model.labels.LabelType;
 import xzero.view.render.LabelTypeRenderer;
 
 /**
- * Информационная панель: показывает текущего игрока, активную метку и позволяет
- * выбрать тип метки или выполнить пас.
+ * Информационная панель, отображающая активного игрока, метку, пасы и элементы управления
  */
 public class InfoPanel extends JPanel {
 
@@ -37,6 +36,12 @@ public class InfoPanel extends JPanel {
 
     private boolean adjustingSelector = false;
 
+    /**
+     * Создаёт информационную панель с обработчиками смены типа метки и запроса паса
+     *
+     * @param onLabelTypeChanged обработчик смены типа метки
+     * @param onPassRequested обработчик запроса паса
+     */
     public InfoPanel(Consumer<LabelType> onLabelTypeChanged, Runnable onPassRequested) {
         this.onLabelTypeChanged = onLabelTypeChanged;
         this.onPassRequested = onPassRequested;
@@ -46,21 +51,27 @@ public class InfoPanel extends JPanel {
     }
 
     /**
-     * Отображает имя активного игрока.
+     * Отображает имя активного игрока
+     *
+     * @param player игрок, которого необходимо показать
      */
     public void showPlayer(Player player) {
         playerInfo.setText(player.name());
     }
 
     /**
-     * Отображает количество оставшихся пасов у активного игрока.
+     * Отображает количество оставшихся пасов у активного игрока
+     *
+     * @param passesLeft количество оставшихся пасов
      */
     public void showPasses(int passesLeft) {
         passInfo.setText(String.format("Пасы: %d", passesLeft));
     }
 
     /**
-     * Отображает символ активной метки и синхронизирует выбор типа метки.
+     * Отображает символ активной метки и синхронизирует выбор типа метки
+     *
+     * @param label метка, которую необходимо показать
      */
     public void showLabel(Label label) {
         labelInfo.setText(label.symbol());
@@ -68,13 +79,18 @@ public class InfoPanel extends JPanel {
     }
 
     /**
-     * Управляет доступностью выбора метки и кнопки паса.
+     * Управляет доступностью выбора типа метки и кнопки паса
+     *
+     * @param enabled true — разрешить взаимодействие, false — запретить
      */
     public void setInteractionEnabled(boolean enabled) {
         passButton.setEnabled(enabled);
         labelTypeSelector.setEnabled(enabled);
     }
 
+    /**
+     * Создаёт и добавляет компоненты панели
+     */
     private void buildContent() {
         add(Box.createHorizontalStrut(10));
 
@@ -114,6 +130,9 @@ public class InfoPanel extends JPanel {
         add(passButton);
     }
 
+    /**
+     * Обрабатывает изменение выбранного типа метки и передаёт выбор внешнему обработчику
+     */
     private void onLabelTypeSelectorChanged() {
         if (adjustingSelector) {
             return;
@@ -126,6 +145,9 @@ public class InfoPanel extends JPanel {
         }
     }
 
+    /**
+     * Обрабатывает нажатие на кнопку паса и передаёт запрос внешнему обработчику
+     */
     private void onPassButtonClicked() {
         try {
             onPassRequested.run();
@@ -134,12 +156,23 @@ public class InfoPanel extends JPanel {
         }
     }
 
+    /**
+     * Синхронизирует выбранный тип метки в селекторе с фактическим типом активной метки
+     *
+     * @param label активная метка
+     */
     private void updateLabelSelector(Label label) {
         adjustingSelector = true;
         labelTypeSelector.setSelectedItem(resolveLabelType(label));
         adjustingSelector = false;
     }
 
+    /**
+     * Определяет тип метки по её классу
+     *
+     * @param label метка, тип которой требуется определить
+     * @return тип метки
+     */
     private LabelType resolveLabelType(Label label) {
         if (label instanceof HiddenLabel) {
             return LabelType.HIDDEN;

@@ -5,31 +5,56 @@ import xzero.model.Player;
 import xzero.model.labels.Label;
 
 /**
- * Событие, связанное с любой деятельностью робота
+ * Событие, описывающее действие игрока и связанную с ним метку
  */
 public class PlayerActionEvent extends EventObject {
-// -------------------------------- Игрок --------------------------------------    
+    // -------------------------------- Игрок --------------------------------------
     Player _player;
-    
-    public void setPlayer(Player p){
-        _player = p;
+
+    /**
+     * Устанавливает игрока, выполнившего действие
+     *
+     * @param player игрок, связанный с событием
+     */
+    public void setPlayer(Player player){
+        _player = player;
     }
-    
+
+    /**
+     * Возвращает игрока, связанного с данным событием
+     *
+     * @return игрок события
+     */
     public Player player(){
         return _player;
     }
 
-// ------------------------- Активная метка ------------------------------
+    // ------------------------- Активная метка ------------------------------
     Label _label;
-    
-    public void setLabel(Label l){
-        _label = l;
+
+    /**
+     * Устанавливает метку, связанную с действием игрока
+     *
+     * @param label метка, связанная с событием
+     */
+    public void setLabel(Label label){
+        _label = label;
     }
-    
+
+    /**
+     * Возвращает метку, связанную с данным событием
+     *
+     * @return метка события
+     */
     public Label label(){
         return _label;
     }
 
+    /**
+     * Создаёт событие действия игрока с указанным источником
+     *
+     * @param source источник события
+     */
     public PlayerActionEvent(Object source) { 
         super(source); 
     } 

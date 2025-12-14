@@ -2,13 +2,18 @@ package xzero.model.labels;
 
 import xzero.model.Player;
 
+/**
+ * Класс делегированной метки
+ */
 public class DelegatedLabel extends Label {
 
-    // Логический владелец метки
-    private final Player _owner;
+    private final Player _owner;    // Логический владелец метки
 
     /**
      * Создание делегированной метки
+     *
+     * @param owner логический владелец метки
+     * @throws IllegalArgumentException
      */
     public DelegatedLabel(Player owner) {
         if (owner == null) {
@@ -20,6 +25,8 @@ public class DelegatedLabel extends Label {
 
     /**
      * Получение логического владельца метки
+     *
+     * @return логический владелец метки
      */
     @Override
     public Player owner() {
@@ -28,6 +35,8 @@ public class DelegatedLabel extends Label {
 
     /**
      * Получение символа отображения
+     *
+     * @return символ метки
      */
     @Override
     public String symbol() {

@@ -74,11 +74,11 @@ class PlayerTest {
 
         p.addPlayerActionListener(new PlayerActionListener() {
             @Override
-            public void labelIsPlaced(PlayerActionEvent e) {
+            public void labelIsPlaced(PlayerActionEvent event) {
             }
 
             @Override
-            public void labelIsReceived(PlayerActionEvent e) {
+            public void labelIsReceived(PlayerActionEvent event) {
                 cnt.incrementAndGet();
             }
         });
@@ -97,12 +97,12 @@ class PlayerTest {
 
         p.addPlayerActionListener(new PlayerActionListener() {
             @Override
-            public void labelIsPlaced(PlayerActionEvent e) {
+            public void labelIsPlaced(PlayerActionEvent event) {
                 cnt.incrementAndGet();
             }
 
             @Override
-            public void labelIsReceived(PlayerActionEvent e) {
+            public void labelIsReceived(PlayerActionEvent event) {
             }
         });
 
@@ -163,12 +163,12 @@ class PlayerTest {
 
         PlayerActionListener listener = new PlayerActionListener() {
             @Override
-            public void labelIsPlaced(PlayerActionEvent e) {
+            public void labelIsPlaced(PlayerActionEvent event) {
                 cnt.incrementAndGet();
             }
 
             @Override
-            public void labelIsReceived(PlayerActionEvent e) {
+            public void labelIsReceived(PlayerActionEvent event) {
                 cnt.incrementAndGet();
             }
         };

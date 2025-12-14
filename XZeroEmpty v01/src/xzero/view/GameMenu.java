@@ -5,10 +5,15 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 /**
- * Меню управления игрой.
+ * Меню управления игровым процессом с основными действиями
  */
 public class GameMenu extends JMenuBar {
 
+    /**
+     * Создаёт меню игры с действиями запуска новой игры и выхода из приложения
+     *
+     * @param onNewGame обработчик запуска новой игры
+     */
     public GameMenu(Runnable onNewGame) {
         JMenu fileMenu = new JMenu("File");
 

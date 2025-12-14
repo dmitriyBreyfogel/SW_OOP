@@ -11,8 +11,8 @@ public class LabelFactory {
     /**
      * Создаёт метку указанного типа для заданного владельца
      *
-     * @param owner - логический владелец метки
-     * @param type - тип метки
+     * @param owner логический владелец метки
+     * @param type тип метки
      * @return созданная метка
      *
      * @throws IllegalArgumentException
@@ -42,9 +42,11 @@ public class LabelFactory {
      * Создаёт метку для текущего игрока, учитывая выбранный тип метки и его противника
      *
      * @param currentPlayer активный игрок, совершающий ход
-     * @param opponent его противник (нужен для делегированной метки)
+     * @param opponent его противник
      * @param type желаемый тип метки
      * @return созданная метка с корректным владельцем
+     *
+     * @throws IllegalArgumentException
      */
     public Label createLabel(Player currentPlayer, Player opponent, LabelType type) {
         if (type == LabelType.DELEGATED) {

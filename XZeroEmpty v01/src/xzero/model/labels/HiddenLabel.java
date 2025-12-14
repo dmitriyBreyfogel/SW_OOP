@@ -2,13 +2,18 @@ package xzero.model.labels;
 
 import xzero.model.Player;
 
+/**
+ * Класс скрытой метки
+ */
 public class HiddenLabel extends Label {
 
-    // Реальный владелец метки, скрытый от игроков до окончания игры
-    private final Player _owner;
+    private final Player _owner;    // Реальный владелец метки, скрытый от игроков до окончания игры
 
     /**
      * Создание скрытой метки
+     *
+     * @param owner владелец данной метки
+     * @throws IllegalArgumentException
      */
     public HiddenLabel(Player owner) {
         if (owner == null) {
@@ -20,6 +25,8 @@ public class HiddenLabel extends Label {
 
     /**
      * Получение реального владельца метки
+     *
+     * @return владелец метки
      */
     @Override
     public Player owner() {
@@ -28,6 +35,8 @@ public class HiddenLabel extends Label {
 
     /**
      * Получение символа отображения
+     *
+     * @return символ данной метки
      */
     @Override
     public String symbol() {

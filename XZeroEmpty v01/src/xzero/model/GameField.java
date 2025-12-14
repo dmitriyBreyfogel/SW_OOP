@@ -12,12 +12,18 @@ import xzero.model.navigation.Direction;
 import xzero.model.navigation.Shift;
 
 /**
- *  Прямоугольное поле, состоящее из ячеек
+ *  Прямоугольное игровое поле, состоящее из ячеек и размещённых в них меток
  */
 public class GameField {
     // ------------------------------ Ячейки ---------------------------------------
     private final Map<Point, Cell> _cellPool = new HashMap<>();
 
+    /**
+     * Возвращает ячейку по указанной позиции
+     *
+     * @param pos позиция ячейки
+     * @return ячейка или null, если позиция пуста или некорректна
+     */
     Cell cell(Point pos) {
         if (pos == null) {
             return null;
@@ -25,6 +31,14 @@ public class GameField {
         return _cellPool.get(new Point(pos));
     }
 
+    /**
+     * Устанавливает ячейку в указанную позицию игрового поля
+     *
+     * @param pos позиция ячейки
+     * @param cell ячейка
+     *
+     * @throws IllegalArgumentException если позиция или ячейка равны null
+     */
     public void setCell(Point pos, Cell cell) {
         if (pos == null) {
             throw new IllegalArgumentException("Позиция ячейки не может быть null");
@@ -43,10 +57,18 @@ public class GameField {
         _cellPool.put(safePoint, cell);
     }
 
+    /**
+     * Очищает игровое поле, удаляя все ячейки
+     */
     public void clear(){
         _cellPool.clear();
     }
 
+    /**
+     * Удаляет ячейку по указанной позиции
+     *
+     * @param pos позиция ячейки
+     */
     private void removeCell(Point pos){
         if (pos == null) {
             return;
@@ -55,6 +77,12 @@ public class GameField {
     }
 
     // ------------------------------ Метки ---------------------------------------
+    /**
+     * Возвращает метку, размещённую в ячейке по указанной позиции
+     *
+     * @param pos позиция ячейки
+     * @return метка или null, если ячейка пуста или не существует
+     */
     public Label label(Point pos) {
         Cell obj = cell(pos);
         if(obj != null)     return obj.label();
@@ -62,6 +90,16 @@ public class GameField {
         return null;
     }
 
+    /**
+     * Устанавливает метку в ячейку по указанной позиции
+     *
+     * @param pos позиция установки метки
+     * @param label метка
+     *
+     * @throws IllegalArgumentException если метка равна null
+     * @throws IndexOutOfBoundsException если позиция выходит за пределы поля
+     * @throws IllegalStateException если ячейка не создана или метка уже установлена в другой ячейке
+     */
     public void setLabel(Point pos, Label label) {
         if (label == null) {
             throw new IllegalArgumentException("Нельзя установить null-метку");
@@ -81,6 +119,11 @@ public class GameField {
 
     private ArrayList<Label> _labelPool = new ArrayList<>();
 
+    /**
+     * Возвращает список всех меток, размещённых на поле
+     *
+     * @return неизменяемый список меток
+     */
     public List<Label> labels() {
         _labelPool.clear();
 
@@ -94,6 +137,13 @@ public class GameField {
         return Collections.unmodifiableList(_labelPool);
     }
 
+    /**
+     * Возвращает последовательность меток одного игрока в заданном направлении
+     *
+     * @param start начальная позиция
+     * @param direct направление поиска
+     * @return список меток, образующих линию
+     */
     public List<Label> labelLine(Point start, Direction direct) {
         ArrayList<Label> line = new ArrayList<>();
         boolean isLineFinished = false;
@@ -128,6 +178,12 @@ public class GameField {
     private int _width;
     private int _height;
 
+    /**
+     * Устанавливает размеры игрового поля
+     *
+     * @param width ширина поля
+     * @param height высота поля
+     */
     public void setSize(int width, int height) {
         _width = width;
         _height = height;
@@ -135,20 +191,39 @@ public class GameField {
         _cellPool.entrySet().removeIf(entry -> !containsRange(entry.getKey()));
     }
 
+    /**
+     * Возвращает ширину игрового поля
+     *
+     * @return ширина поля
+     */
     public int width() {
         return _width;
     }
 
+    /**
+     * Возвращает высоту игрового поля
+     *
+     * @return высота поля
+     */
     public int height() {
         return _height;
     }
 
+    /**
+     * Проверяет, находится ли позиция в пределах игрового поля
+     *
+     * @param p проверяемая позиция
+     * @return true, если позиция допустима, иначе false
+     */
     public boolean containsRange(Point p) {
         return p.getX() >= 1 && p.getX() <= _width &&
                 p.getY() >= 1 && p.getY() <= _height ;
     }
 
     // ----------------------------------------------------------------------------
+    /**
+     * Создаёт игровое поле с размерами по умолчанию
+     */
     public GameField() {
         setSize(5, 5);
     }

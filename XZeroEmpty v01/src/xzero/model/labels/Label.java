@@ -8,8 +8,8 @@ public abstract class Label {
     // Ячейка, которой принадлежит метка
     private Cell _cell = null;
 
-    public void setCell(Cell c) {
-        _cell = c;
+    public void setCell(Cell cell) {
+        _cell = cell;
     }
 
     public void unsetCell() {

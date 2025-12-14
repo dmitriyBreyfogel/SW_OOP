@@ -6,14 +6,21 @@ import xzero.model.GameField;
 import xzero.model.factory.CellFactory;
 
 /**
- * Подготавливает прямоугольную сетку фиксированного размера, создавая ячейки
- * через переданную фабрику.
+ * Инициализатор игрового поля в виде прямоугольной сетки фиксированного размера
  */
 public class GridFieldInitializer implements FieldInitializer {
 
     private final int width;
     private final int height;
 
+    /**
+     * Создаёт инициализатор с заданными размерами игрового поля
+     *
+     * @param width ширина
+     * @param height высота
+     *
+     * @throws IllegalArgumentException
+     */
     public GridFieldInitializer(int width, int height) {
         if (width <= 0 || height <= 0) {
             throw new IllegalArgumentException("Размеры поля должны быть положительными");
@@ -22,6 +29,12 @@ public class GridFieldInitializer implements FieldInitializer {
         this.height = height;
     }
 
+    /**
+     * Подготавливает игровое поле, очищая его и заполняя ячейками через фабрику
+     *
+     * @param field игровое поле, которое необходимо инициализировать
+     * @param cellFactory фабрика для создания ячеек
+     */
     @Override
     public void prepare(GameField field, CellFactory cellFactory) {
         field.clear();
