@@ -89,4 +89,39 @@ class LabelTest {
         label.unsetPlacedBy();
         assertNull(label.getPlacedBy());
     }
+
+    @Test
+    @DisplayName("Тест №8: символ обычной метки обновляется при смене имени владельца")
+    void normalLabelSymbolReflectsOwnerName() {
+        Player owner = new Player(new GameField(), "A");
+        Label label = new NormalLabel(owner);
+
+        owner.setName("B");
+
+        assertEquals("B", label.symbol());
+    }
+
+    @Test
+    @DisplayName("Тест №9: метка может привязываться к другой ячейке")
+    void cellReferenceCanBeReassigned() {
+        Label label = new NormalLabel(new Player(new GameField(), "X"));
+        xzero.model.Cell first = new xzero.model.Cell();
+        xzero.model.Cell second = new xzero.model.Cell();
+
+        label.setCell(first);
+        label.setCell(second);
+
+        assertSame(second, label.cell());
+    }
+
+    @Test
+    @DisplayName("Тест №10: placedBy не зависит от привязки к ячейке")
+    void placedByUnaffectedByCellBinding() {
+        Player issuer = new Player(new GameField(), "X");
+        Label label = new HiddenLabel(new Player(new GameField(), "O"));
+        label.setPlacedBy(issuer);
+        label.setCell(new xzero.model.Cell());
+
+        assertEquals(issuer, label.getPlacedBy());
+    }
 }
