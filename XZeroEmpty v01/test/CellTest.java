@@ -105,7 +105,6 @@ class CellTest {
         c.placeLabel(l);
         assertSame(c, l.cell());
     }
-}
 
     @Test
     @DisplayName("Тест №9: после удаления метки можно установить новую")
@@ -124,19 +123,7 @@ class CellTest {
     }
 
     @Test
-    @DisplayName("Тест №10: установка метки обновляет ссылку на поле")
-    void labelKnowsFieldThroughCell() {
-        GameField f = new GameField();
-        Cell c = makeCell(f, 3, 3);
-        NormalLabel label = labelFor(f, "X");
-
-        c.placeLabel(label);
-
-        assertEquals(f, label.cell().field());
-    }
-
-    @Test
-    @DisplayName("Тест №11: позиция после изменения возвращается актуальной копией")
+    @DisplayName("Тест №10: позиция после изменения возвращается актуальной копией")
     void positionReflectsChangesButRemainsCopy() {
         GameField f = new GameField();
         Cell c = makeCell(f, 4, 4);

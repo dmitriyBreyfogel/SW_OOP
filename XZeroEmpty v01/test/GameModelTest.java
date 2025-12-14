@@ -228,7 +228,6 @@ class GameModelTest {
         assertNotSame(currentLabel, refreshed);
         assertEquals("?", refreshed.symbol());
     }
-}
 
     @Test
     @DisplayName("Тест №19: повторный старт очищает поле и создаёт новое")

@@ -176,7 +176,6 @@ class GameFieldTest {
         List<Label> line = f.labelLine(new Point(1, 1), Direction.east());
         assertTrue(line.isEmpty());
     }
-}
 
     @Test
     @DisplayName("Тест №15: линия обрывается на пустой ячейке")
