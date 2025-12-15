@@ -19,7 +19,7 @@ public class GridFieldInitializer implements FieldInitializer {
      * @param width ширина
      * @param height высота
      *
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException если ширина или длина отрицательны
      */
     public GridFieldInitializer(int width, int height) {
         if (width <= 0 || height <= 0) {

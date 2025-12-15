@@ -21,7 +21,7 @@ public class TurnManager {
      * @param players список игроков, участвующих в игре
      * @param passLimitPerPlayer максимальное количество пасов для каждого игрока
      *
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException если игроков нет
      */
     public TurnManager(List<Player> players, int passLimitPerPlayer) {
         if (players == null || players.isEmpty()) {

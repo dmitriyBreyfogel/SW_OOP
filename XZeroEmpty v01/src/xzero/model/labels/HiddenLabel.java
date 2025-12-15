@@ -13,7 +13,7 @@ public class HiddenLabel extends Label {
      * Создание скрытой метки
      *
      * @param owner владелец данной метки
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException если владелец равен null
      */
     public HiddenLabel(Player owner) {
         if (owner == null) {

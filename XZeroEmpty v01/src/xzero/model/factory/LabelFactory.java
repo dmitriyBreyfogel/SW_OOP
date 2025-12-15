@@ -15,7 +15,7 @@ public class LabelFactory {
      * @param type тип метки
      * @return созданная метка
      *
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException если владелец или тип метки равны null
      */
     public Label createLabel(Player owner, LabelType type) {
         if (owner == null) {
@@ -46,7 +46,7 @@ public class LabelFactory {
      * @param type желаемый тип метки
      * @return созданная метка с корректным владельцем
      *
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException если противник равен null
      */
     public Label createLabel(Player currentPlayer, Player opponent, LabelType type) {
         if (type == LabelType.DELEGATED) {

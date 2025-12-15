@@ -10,7 +10,7 @@ public class NormalLabel extends Label {
      * Создания обычной метки, принадлежащей конкретному игроку
      *
      * @param owner - владелец метки
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException если владелец равен null
      */
     public NormalLabel(Player owner) {
         if (owner == null) {

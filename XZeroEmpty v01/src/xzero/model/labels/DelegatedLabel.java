@@ -13,7 +13,7 @@ public class DelegatedLabel extends Label {
      * Создание делегированной метки
      *
      * @param owner логический владелец метки
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException если владелец равен null
      */
     public DelegatedLabel(Player owner) {
         if (owner == null) {
