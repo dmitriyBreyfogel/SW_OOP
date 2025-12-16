@@ -1,0 +1,151 @@
+@startuml
+set namespaceSeparator .
+hide empty members
+skinparam classAttributeIconSize 0
+
+package xzero {
+  class XZero
+}
+
+package xzero.model {
+  class GameModel {
+    - GameField _field
+    - FieldInitializer _fieldInitializer
+    - List<Player> _playerList
+    - TurnManager _turnManager
+    - CellFactory _cellFactory
+    - LabelFactory _labelFactory
+    - LabelType _activeLabelType
+    - boolean _secretModeEnabled
+  }
+
+  class GameField {
+    - Map<Point, Cell> _cellMap
+  }
+
+  class Cell {
+    - Point _position
+    - GameField _field
+    - Label _label
+  }
+
+  class Player {
+    - GameField _field
+    - Label _label
+  }
+
+  class TurnManager {
+    - List<PlayerState> states
+    - int activeIndex
+  }
+
+  class PlayerState
+
+  interface FieldInitializer
+  class GridFieldInitializer
+
+  class CellFactory
+  class LabelFactory
+
+  enum LabelType {
+    NORMAL
+    DELEGATED
+    HIDDEN
+  }
+
+  abstract class Label {
+    - Cell _cell
+    - Player _placedBy
+  }
+  class NormalLabel
+  class DelegatedLabel
+  class HiddenLabel
+  class SecretLabel
+
+  class Direction
+  class Shift
+}
+
+package xzero.model.events {
+  interface GameListener
+  class GameEvent
+  interface PlayerActionListener
+  class PlayerActionEvent
+}
+
+package xzero.model.factory {
+  CellFactory ..> xzero.model.Cell
+  LabelFactory ..> xzero.model.LabelType
+  LabelFactory ..> xzero.model.Label
+}
+
+package xzero.view {
+  class GamePanel
+  class FieldPanel
+  class CellButton
+  class InfoPanel
+  class GameMenu
+}
+
+package xzero.view.render {
+  class LabelTypeRenderer
+}
+
+' --- Наследование меток ---
+Label <|-- NormalLabel
+Label <|-- DelegatedLabel
+Label <|-- HiddenLabel
+Label <|-- SecretLabel
+
+' --- Инициализаторы поля ---
+FieldInitializer <|.. GridFieldInitializer
+
+' --- Взаимосвязи модели ---
+GameModel "1" *-- "1" GameField : field
+GameModel "1" *-- "1" FieldInitializer : initializer
+GameModel "1" *-- "1" TurnManager : turnManager
+GameModel "1" o-- "1" CellFactory
+GameModel "1" o-- "1" LabelFactory
+GameModel "1" -- "2" Player : players
+TurnManager "1" *-- "*" PlayerState
+PlayerState "1" --> "1" Player : player
+Player "1" --> "0..1" Label : activeLabel
+Player "1" --> "1" GameField : field
+Player "1" --> "*" Label : labels()
+GameField "1" *-- "*" Cell
+Cell "1" --> "0..1" Label : label
+Label "0..1" --> "0..1" Cell : cell
+Label "1" --> "1" Player : owner()
+
+' --- Фабрики ---
+CellFactory ..> Cell : create()
+LabelFactory ..> Label : create()
+LabelFactory ..> SecretLabel : createSecretLabel()
+
+' --- Навигация ---
+Direction --> Shift : uses
+
+' --- События ---
+GameModel ..> GameListener
+GameModel ..> PlayerActionListener
+Player ..> PlayerActionListener
+GameEvent --> Player
+PlayerActionEvent --> Player
+PlayerActionEvent --> Label
+
+' --- Представление ---
+GamePanel *-- FieldPanel
+GamePanel *-- InfoPanel
+GamePanel *-- GameMenu
+GamePanel --> GameModel
+FieldPanel --> GameModel
+FieldPanel *-- CellButton
+InfoPanel --> LabelType
+InfoPanel --> Player
+InfoPanel --> Label
+InfoPanel --> LabelTypeRenderer
+GameMenu ..> GamePanel : callbacks
+LabelTypeRenderer --> LabelType
+
+XZero --> GamePanel : main()
+@enduml

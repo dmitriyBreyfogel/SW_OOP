@@ -1,25 +1,30 @@
 package xzero.view;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.util.function.Consumer;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 
 import xzero.model.Player;
 import xzero.model.labels.DelegatedLabel;
 import xzero.model.labels.HiddenLabel;
 import xzero.model.labels.Label;
 import xzero.model.labels.LabelType;
+import xzero.model.labels.SecretLabel;
 import xzero.view.render.LabelTypeRenderer;
 
 /**
- * Информационная панель, отображающая активного игрока, метку, пасы и элементы управления
+ * Панель информации о текущем игроке, выбранной метке и пасах с поддержкой секретности.
  */
 public class InfoPanel extends JPanel {
 
@@ -30,48 +35,55 @@ public class InfoPanel extends JPanel {
     private final JLabel passInfo = new JLabel();
     private final JButton passButton = new JButton("Пас");
     private final JComboBox<LabelType> labelTypeSelector = new JComboBox<>(LabelType.values());
+    private final JCheckBox secretModeCheckbox = new JCheckBox("Секретно");
 
     private final Consumer<LabelType> onLabelTypeChanged;
     private final Runnable onPassRequested;
+    private final Consumer<Boolean> onSecretModeChanged;
 
     private boolean adjustingSelector = false;
+    private boolean secretModeEnabled = false;
+    private boolean interactionEnabled = false;
 
     /**
-     * Создаёт информационную панель с обработчиками смены типа метки и запроса паса
+     * Создаёт панель с обработчиками событий.
      *
      * @param onLabelTypeChanged обработчик смены типа метки
-     * @param onPassRequested обработчик запроса паса
+     * @param onPassRequested обработчик паса
+     * @param onSecretModeChanged обработчик переключения секретности
      */
-    public InfoPanel(Consumer<LabelType> onLabelTypeChanged, Runnable onPassRequested) {
+    public InfoPanel(Consumer<LabelType> onLabelTypeChanged, Runnable onPassRequested,
+                     Consumer<Boolean> onSecretModeChanged) {
         this.onLabelTypeChanged = onLabelTypeChanged;
         this.onPassRequested = onPassRequested;
+        this.onSecretModeChanged = onSecretModeChanged;
 
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         buildContent();
     }
 
     /**
-     * Отображает имя активного игрока
+     * Показывает активного игрока.
      *
-     * @param player игрок, которого необходимо показать
+     * @param player активный игрок
      */
     public void showPlayer(Player player) {
         playerInfo.setText(player.name());
     }
 
     /**
-     * Отображает количество оставшихся пасов у активного игрока
+     * Показывает количество оставшихся пасов.
      *
-     * @param passesLeft количество оставшихся пасов
+     * @param passesLeft число пасов
      */
     public void showPasses(int passesLeft) {
-        passInfo.setText(String.format("Пасы: %d", passesLeft));
+        passInfo.setText(String.format("Пасов: %d", passesLeft));
     }
 
     /**
-     * Отображает символ активной метки и синхронизирует выбор типа метки
+     * Показывает активную метку игрока.
      *
-     * @param label метка, которую необходимо показать
+     * @param label метка
      */
     public void showLabel(Label label) {
         labelInfo.setText(label.symbol());
@@ -79,29 +91,44 @@ public class InfoPanel extends JPanel {
     }
 
     /**
-     * Управляет доступностью выбора типа метки и кнопки паса
+     * Включает/выключает интерактивность элементов.
      *
-     * @param enabled true — разрешить взаимодействие, false — запретить
+     * @param enabled true ¢?" элементы активны
      */
     public void setInteractionEnabled(boolean enabled) {
+        interactionEnabled = enabled;
         passButton.setEnabled(enabled);
-        labelTypeSelector.setEnabled(enabled);
+        secretModeCheckbox.setEnabled(enabled);
+        labelTypeSelector.setEnabled(enabled && !secretModeEnabled);
     }
 
     /**
-     * Создаёт и добавляет компоненты панели
+     * Устанавливает состояние режима секретности.
+     *
+     * @param enabled true ¢?" включён
+     */
+    public void setSecretMode(boolean enabled) {
+        secretModeEnabled = enabled;
+        secretModeCheckbox.setSelected(enabled);
+        labelTypeSelector.setEnabled(interactionEnabled && !enabled);
+        labelTypeSelector.setRenderer(enabled ? new MaskedRenderer() : new LabelTypeRenderer());
+        labelTypeSelector.setToolTipText(enabled ? "Тип метки скрыт" : null);
+    }
+
+    /**
+     * Строит элементы панели.
      */
     private void buildContent() {
         add(Box.createHorizontalStrut(10));
 
-        add(new JLabel("Игрок :"));
+        add(new JLabel("Игрок:"));
         playerInfo.setText("?");
         add(Box.createHorizontalStrut(10));
         add(playerInfo);
 
         add(Box.createHorizontalStrut(20));
 
-        add(new JLabel("Метка :"));
+        add(new JLabel("Метка:"));
         add(Box.createHorizontalStrut(10));
 
         labelInfo.setEnabled(false);
@@ -109,6 +136,12 @@ public class InfoPanel extends JPanel {
         labelInfo.setMinimumSize(new Dimension(CELL_SIZE, CELL_SIZE));
         labelInfo.setMaximumSize(new Dimension(CELL_SIZE, CELL_SIZE));
         add(labelInfo);
+
+        add(Box.createHorizontalStrut(10));
+
+        secretModeCheckbox.setFocusable(false);
+        secretModeCheckbox.addActionListener(e -> onSecretModeCheckboxChanged());
+        add(secretModeCheckbox);
 
         add(Box.createHorizontalStrut(10));
         add(new JLabel("Тип метки:"));
@@ -121,56 +154,74 @@ public class InfoPanel extends JPanel {
         add(Box.createHorizontalStrut(10));
 
         passInfo.setHorizontalAlignment(SwingConstants.CENTER);
-        passInfo.setText("Пасы: 0");
+        passInfo.setText("Пасов: 0");
         passInfo.setPreferredSize(new Dimension(100, CELL_SIZE));
         add(passInfo);
 
+        passButton.setText("Пас");
         passButton.setFocusable(false);
         passButton.addActionListener(e -> onPassButtonClicked());
         add(passButton);
     }
 
     /**
-     * Обрабатывает изменение выбранного типа метки и передаёт выбор внешнему обработчику
+     * Обработчик смены типа метки.
      */
     private void onLabelTypeSelectorChanged() {
-        if (adjustingSelector) {
+        if (adjustingSelector || secretModeEnabled) {
             return;
         }
         LabelType selectedType = (LabelType) labelTypeSelector.getSelectedItem();
         try {
             onLabelTypeChanged.accept(selectedType);
         } catch (RuntimeException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Выбор метки", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка выбора метки", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     /**
-     * Обрабатывает нажатие на кнопку паса и передаёт запрос внешнему обработчику
+     * Обработчик переключения секретности.
+     */
+    private void onSecretModeCheckboxChanged() {
+        boolean enabled = secretModeCheckbox.isSelected();
+        try {
+            onSecretModeChanged.accept(enabled);
+            setSecretMode(enabled);
+        } catch (RuntimeException ex) {
+            secretModeCheckbox.setSelected(!enabled);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Ошибка переключения режима", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    /**
+     * Обработчик нажатия паса.
      */
     private void onPassButtonClicked() {
         try {
             onPassRequested.run();
         } catch (RuntimeException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Нельзя выполнить пас", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Пас недоступен", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     /**
-     * Синхронизирует выбранный тип метки в селекторе с фактическим типом активной метки
+     * Обновляет выбор типа без раскрытия скрытой метки.
      *
-     * @param label активная метка
+     * @param label метка
      */
     private void updateLabelSelector(Label label) {
+        if (secretModeEnabled || label instanceof SecretLabel) {
+            return;
+        }
         adjustingSelector = true;
         labelTypeSelector.setSelectedItem(resolveLabelType(label));
         adjustingSelector = false;
     }
 
     /**
-     * Определяет тип метки по её классу
+     * Определяет тип метки по её классу.
      *
-     * @param label метка, тип которой требуется определить
+     * @param label метка
      * @return тип метки
      */
     private LabelType resolveLabelType(Label label) {
@@ -181,5 +232,18 @@ public class InfoPanel extends JPanel {
             return LabelType.DELEGATED;
         }
         return LabelType.NORMAL;
+    }
+
+    /**
+     * Рендерер, маскирующий значение при секретности.
+     */
+    private static final class MaskedRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                      boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            setText("Тип скрыт");
+            return this;
+        }
     }
 }

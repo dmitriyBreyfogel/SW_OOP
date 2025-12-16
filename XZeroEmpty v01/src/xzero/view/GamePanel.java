@@ -21,7 +21,7 @@ public class GamePanel extends JFrame {
 
     private final GameModel model = new GameModel();
     private final FieldPanel fieldPanel = new FieldPanel(model, this::handleCellClick);
-    private final InfoPanel infoPanel = new InfoPanel(this::handleLabelTypeChange, this::handlePassRequest);
+    private final InfoPanel infoPanel = new InfoPanel(this::handleLabelTypeChange, this::handlePassRequest, this::handleSecretModeChange);
 
     /**
      * Создаёт главное окно игры, инициализируя интерфейс и подписки на события модели
@@ -55,6 +55,7 @@ public class GamePanel extends JFrame {
      */
     private void startNewGame() {
         model.start();
+        infoPanel.setSecretMode(model.secretModeEnabled());
         fieldPanel.buildField();
     }
 
@@ -74,6 +75,15 @@ public class GamePanel extends JFrame {
      */
     private void handleLabelTypeChange(LabelType labelType) {
         model.setActiveLabelType(labelType);
+    }
+
+    /**
+     * Обработчик переключения режима секретности
+     *
+     * @param enabled true ¢?" режим секретности включён, false ¢?" выключен
+     */
+    private void handleSecretModeChange(boolean enabled) {
+        model.setSecretModeEnabled(enabled);
     }
 
     /**
@@ -149,6 +159,7 @@ public class GamePanel extends JFrame {
          */
         @Override
         public void playerExchanged(GameEvent event) {
+            infoPanel.setSecretMode(model.secretModeEnabled());
             drawPlayerOnInfoPanel(event.player());
             drawPassesOnInfoPanel(event.player());
         }

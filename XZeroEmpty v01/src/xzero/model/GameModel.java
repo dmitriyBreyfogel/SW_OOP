@@ -38,6 +38,7 @@ public class GameModel {
     private final TurnManager _turnManager;
 
     private LabelType _activeLabelType = LabelType.NORMAL;
+    private boolean _secretModeEnabled = false;
 
     /**
      * Возвращает игрока, чей ход сейчас активен
@@ -167,6 +168,25 @@ public class GameModel {
     }
 
     /**
+     * Включает или выключает режим секретности.
+     *
+     * @param enabled true ¢?" режим секретности включён, false ¢?" выключен
+     */
+    public void setSecretModeEnabled(boolean enabled) {
+        _secretModeEnabled = enabled;
+        refreshActiveLabel();
+    }
+
+    /**
+     * Признак активного режима секретности.
+     *
+     * @return true, если секретность включена
+     */
+    public boolean secretModeEnabled() {
+        return _secretModeEnabled;
+    }
+
+    /**
      * Возвращает текущий выбранный тип метки активного игрока
      *
      * @return тип активной метки
@@ -180,7 +200,9 @@ public class GameModel {
      */
     private void refreshActiveLabel() {
         Player opponent = opponentFor(activePlayer());
-        Label newLabel = _labelFactory.createLabel(activePlayer(), opponent, _activeLabelType);
+        Label newLabel = _secretModeEnabled
+                ? _labelFactory.createSecretLabel(activePlayer(), opponent, _activeLabelType)
+                : _labelFactory.createLabel(activePlayer(), opponent, _activeLabelType);
         activePlayer().setActiveLabel(newLabel);
     }
 

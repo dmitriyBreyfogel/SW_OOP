@@ -15,7 +15,7 @@ public class GameMenu extends JMenuBar {
      * @param onNewGame обработчик запуска новой игры
      */
     public GameMenu(Runnable onNewGame) {
-        JMenu fileMenu = new JMenu("File");
+        JMenu fileMenu = new JMenu("Игра");
 
         JMenuItem newItem = new JMenuItem("New");
         newItem.addActionListener(e -> onNewGame.run());

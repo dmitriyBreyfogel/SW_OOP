@@ -58,4 +58,16 @@ public class LabelFactory {
 
         return createLabel(currentPlayer, type);
     }
+    /**
+     * Создаёт секретную метку, скрывающую реальный вид.
+     *
+     * @param currentPlayer активный игрок
+     * @param opponent соперник (для делегированной метки)
+     * @param type скрываемый тип
+     * @return секретная метка
+     */
+    public Label createSecretLabel(Player currentPlayer, Player opponent, LabelType type) {
+        Label hidden = createLabel(currentPlayer, opponent, type);
+        return new SecretLabel(hidden);
+    }
 }

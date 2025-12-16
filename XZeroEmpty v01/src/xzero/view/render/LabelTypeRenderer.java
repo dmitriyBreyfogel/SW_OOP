@@ -7,19 +7,19 @@ import javax.swing.JList;
 import xzero.model.labels.LabelType;
 
 /**
- * Рендерер элементов выпадающего списка для отображения типов меток в человекочитаемом виде
+ * Рендерер для отображения читабельных имён типов меток.
  */
 public class LabelTypeRenderer extends DefaultListCellRenderer {
 
     /**
-     * Формирует визуальное представление элемента списка типов меток
+     * Возвращает компонент списка с локализованным названием типа.
      *
-     * @param list список, для которого выполняется рендеринг
-     * @param value значение элемента списка
-     * @param index индекс элемента
-     * @param isSelected признак выбранного элемента
-     * @param cellHasFocus признак фокуса элемента
-     * @return компонент для отображения элемента списка
+     * @param list список, в котором рендерится элемент
+     * @param value значение элемента
+     * @param index индекс
+     * @param isSelected флаг выбранности
+     * @param cellHasFocus флаг фокуса
+     * @return компонент ячейки
      */
     @Override
     public Component getListCellRendererComponent(JList<?> list, Object value, int index,
@@ -32,15 +32,15 @@ public class LabelTypeRenderer extends DefaultListCellRenderer {
     }
 
     /**
-     * Преобразует тип метки в человекочитаемое строковое представление
+     * Возвращает русское имя типа метки.
      *
      * @param type тип метки
-     * @return строка для отображения пользователю
+     * @return отображаемое имя
      */
     private String toDisplayName(LabelType type) {
         return switch (type) {
-            case NORMAL -> "Текущая";
-            case DELEGATED -> "Метка противника";
+            case NORMAL -> "Обычная";
+            case DELEGATED -> "Делегированная";
             case HIDDEN -> "Скрытая";
         };
     }

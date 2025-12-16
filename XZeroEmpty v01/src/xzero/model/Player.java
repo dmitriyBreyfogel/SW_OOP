@@ -7,6 +7,7 @@ import java.util.List;
 import xzero.model.events.PlayerActionEvent;
 import xzero.model.events.PlayerActionListener;
 import xzero.model.labels.Label;
+import xzero.model.labels.SecretLabel;
 
 /**
  *  Игрок, который получает активную метку и размещает её на игровом поле
@@ -101,9 +102,14 @@ public class Player {
         if (_label == null) {
             throw new IllegalStateException("Player: метка не может быть null");
         }
-        _field.setLabel(pos, _label);
+        Label toPlace = _label;
+        if (_label instanceof SecretLabel) {
+            toPlace = ((SecretLabel)_label).reveal();
+            toPlace.setPlacedBy(this);
+        }
+        _field.setLabel(pos, toPlace);
 
-        fireLabelIsPlaced(_label);
+        fireLabelIsPlaced(toPlace);
 
         _label = null;
     }
